@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { site } from "@/data/site";
 
 export default function Home() {
@@ -68,32 +69,60 @@ function Hero() {
   return (
     <section
       id="top"
-      className="relative isolate overflow-hidden min-h-[88vh] flex items-center"
+      className="relative isolate overflow-hidden min-h-[100svh] flex items-center"
     >
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(245,158,11,0.18),transparent_55%),radial-gradient(circle_at_75%_75%,rgba(239,68,68,0.18),transparent_55%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background" />
+      {/* Background image with slow Ken Burns motion */}
+      <div className="absolute inset-0 -z-20">
+        <div className="absolute inset-0 animate-ken-burns">
+          <Image
+            src={site.heroImage.src}
+            alt={site.heroImage.alt}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[60%_30%] md:object-[70%_30%]"
+          />
+        </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 py-24 w-full">
-        <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--muted)] mb-4">
-          Artista · Vallenato XXI
-        </p>
-        <h1 className="font-impact text-[clamp(4rem,14vw,12rem)] leading-[0.85] tracking-tight">
+      {/* Dark gradient overlays for legibility */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/85 md:via-background/70 to-background/30 md:to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background/40" />
+
+      {/* Animated stage-light glows */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute top-1/4 left-[-10%] w-[55vw] h-[55vw] rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.45),transparent_60%)] blur-3xl animate-glow-a" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[radial-gradient(circle,rgba(239,68,68,0.35),transparent_60%)] blur-3xl animate-glow-b" />
+        <div className="absolute top-[10%] right-[20%] w-[35vw] h-[35vw] rounded-full bg-[radial-gradient(circle,rgba(168,85,247,0.18),transparent_65%)] blur-3xl animate-glow-a" />
+      </div>
+
+      {/* Vignette */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,0.55)_100%)]" />
+
+      <div className="relative mx-auto max-w-6xl px-6 py-28 md:py-32 w-full">
+        <div className="animate-hero-fade-up [animation-delay:80ms]">
+          <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--muted)] mb-4">
+            <span className="inline-block w-8 h-px align-middle bg-[color:var(--accent)] mr-3" />
+            Artista · Vallenato XXI
+          </p>
+        </div>
+
+        <h1 className="animate-hero-fade-up [animation-delay:180ms] font-impact text-[clamp(4rem,14vw,12rem)] leading-[0.85] tracking-tight drop-shadow-[0_4px_30px_rgba(0,0,0,0.6)]">
           <span className="brand-text-gradient">
             {site.artistName.toUpperCase()}
           </span>
         </h1>
-        <p className="mt-6 max-w-xl text-lg md:text-xl text-[color:var(--muted)]">
+
+        <p className="animate-hero-fade-up [animation-delay:320ms] mt-6 max-w-xl text-lg md:text-xl text-foreground/80">
           {site.tagline}
         </p>
 
-        <div className="mt-10 flex flex-wrap gap-3">
+        <div className="animate-hero-fade-up [animation-delay:460ms] mt-10 flex flex-wrap gap-3">
           <a
             href={site.contact.bookingWhatsapp}
             target="_blank"
             rel="noopener noreferrer"
-            className="brand-gradient text-black font-semibold px-6 py-3 rounded-full hover:opacity-90 transition-opacity inline-flex items-center gap-2"
+            className="brand-gradient text-black font-semibold px-6 py-3 rounded-full hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all inline-flex items-center gap-2 shadow-lg shadow-amber-500/20"
           >
             <WhatsAppIcon className="w-5 h-5" />
             Contratar por WhatsApp
@@ -102,13 +131,25 @@ function Hero() {
             href={site.social.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="border border-[color:var(--border)] hover:border-foreground text-foreground font-semibold px-6 py-3 rounded-full inline-flex items-center gap-2 transition-colors"
+            className="backdrop-blur-sm bg-white/5 border border-white/15 hover:border-white/40 hover:bg-white/10 text-foreground font-semibold px-6 py-3 rounded-full inline-flex items-center gap-2 transition-colors"
           >
             <InstagramIcon className="w-5 h-5" />
             Instagram
           </a>
         </div>
       </div>
+
+      {/* Scroll indicator */}
+      <a
+        href="#sobre"
+        aria-label="Scroll hacia abajo"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[color:var(--muted)] hover:text-foreground transition-colors"
+      >
+        <span className="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
+        <span className="animate-scroll-cue">
+          <ChevronDownIcon className="w-5 h-5" />
+        </span>
+      </a>
     </section>
   );
 }
@@ -454,6 +495,14 @@ function FacebookIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
       <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z" />
+    </svg>
+  );
+}
+
+function ChevronDownIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }

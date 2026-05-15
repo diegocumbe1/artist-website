@@ -67,3 +67,92 @@ body {
     transparent
   );
 }
+
+/* ----- Hero animations ----- */
+
+@keyframes ken-burns {
+  0% {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.12) translate3d(-1.5%, -1%, 0);
+  }
+  100% {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes pulse-glow-a {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translate3d(2%, -1%, 0) scale(1.15);
+  }
+}
+
+@keyframes pulse-glow-b {
+  0%, 100% {
+    opacity: 0.25;
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translate3d(-2%, 1%, 0) scale(0.95);
+  }
+}
+
+.animate-glow-a {
+  animation: pulse-glow-a 7s ease-in-out infinite;
+}
+
+.animate-glow-b {
+  animation: pulse-glow-b 9s ease-in-out infinite;
+}
+
+@keyframes hero-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-fade-up {
+  animation: hero-fade-up 0.9s ease-out both;
+}
+
+@keyframes scroll-cue {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(6px);
+  }
+}
+
+.animate-scroll-cue {
+  animation: scroll-cue 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns,
+  .animate-glow-a,
+  .animate-glow-b,
+  .animate-hero-fade-up,
+  .animate-scroll-cue {
+    animation: none;
+  }
+}

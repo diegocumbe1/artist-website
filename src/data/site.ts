@@ -25,6 +25,11 @@ export const site = {
     appleMusic: "",
   },
 
+  heroImage: {
+    src: "/hero/pipe-stage.jpg",
+    alt: "Pipe Cumbe cantando en tarima",
+  },
+
   featuredVideo: {
     youtubeId: "b4Va4Zohs9Q",
     title: "Video destacado",
