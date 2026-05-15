@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { site } from "@/data/site";
+import { Gallery as GalleryGrid } from "@/components/Gallery";
+import { VideoCarousel } from "@/components/VideoCarousel";
 
 export default function Home() {
   return (
@@ -240,21 +242,11 @@ function Music() {
 /* ---------------------------- FEATURED VIDEO ---------------------------- */
 
 function FeaturedVideo() {
-  const { youtubeId, title } = site.featuredVideo;
   return (
     <section id="video" className="py-24 border-t border-[color:var(--border)]">
       <div className="mx-auto max-w-5xl px-6">
-        <SectionHeading eyebrow="En tarima" title="Video destacado" />
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-[color:var(--border)] bg-black">
-          <iframe
-            className="absolute inset-0 w-full h-full"
-            src={`https://www.youtube.com/embed/${youtubeId}`}
-            title={title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-          />
-        </div>
+        <SectionHeading eyebrow="En tarima" title="Videos destacados" />
+        <VideoCarousel />
       </div>
     </section>
   );
@@ -270,49 +262,12 @@ function Gallery() {
     >
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading eyebrow="Galería" title="Momentos en vivo" />
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-          {site.gallery.map((g, i) => (
-            <GalleryItem key={i} index={i + 1} alt={g.alt} />
-          ))}
-        </div>
-        <p className="mt-6 text-sm text-[color:var(--muted)]">
-          Reemplaza las imágenes en{" "}
-          <code className="text-foreground/80">public/gallery/</code> (1.jpg a 6.jpg).
+        <GalleryGrid />
+        <p className="mt-6 text-xs text-[color:var(--muted)]">
+          Haz click en cualquier imagen para verla en grande.
         </p>
       </div>
     </section>
-  );
-}
-
-function GalleryItem({
-  index,
-  alt,
-}: {
-  index: number;
-  alt: string;
-}) {
-  const hues = [
-    "from-amber-500/20 via-amber-700/10",
-    "from-red-500/20 via-red-700/10",
-    "from-orange-500/20 via-orange-700/10",
-    "from-yellow-600/20 via-yellow-800/10",
-    "from-rose-500/20 via-rose-700/10",
-    "from-amber-600/20 via-red-600/10",
-  ];
-  const hue = hues[index - 1] ?? hues[0];
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      className={`relative aspect-square overflow-hidden rounded-xl border border-[color:var(--border)] bg-gradient-to-br ${hue} to-[color:var(--surface)] flex items-center justify-center`}
-    >
-      <span className="font-impact text-6xl text-foreground/15 tracking-widest">
-        {index.toString().padStart(2, "0")}
-      </span>
-      <span className="absolute bottom-3 left-3 text-xs uppercase tracking-widest text-foreground/40">
-        Foto {index}
-      </span>
-    </div>
   );
 }
 

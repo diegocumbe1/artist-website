@@ -147,12 +147,38 @@ body {
   animation: scroll-cue 2s ease-in-out infinite;
 }
 
+@keyframes lightbox-fade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-lightbox-fade {
+  animation: lightbox-fade 0.25s ease-out both;
+}
+
+@keyframes lightbox-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-lightbox-pop {
+  animation: lightbox-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-ken-burns,
   .animate-glow-a,
   .animate-glow-b,
   .animate-hero-fade-up,
-  .animate-scroll-cue {
+  .animate-scroll-cue,
+  .animate-lightbox-fade,
+  .animate-lightbox-pop {
     animation: none;
   }
 }

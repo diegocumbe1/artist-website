@@ -30,19 +30,29 @@ export const site = {
     alt: "Pipe Cumbe cantando en tarima",
   },
 
-  featuredVideo: {
-    youtubeId: "b4Va4Zohs9Q",
-    title: "Video destacado",
-  },
+  videos: [
+    { youtubeId: "b4Va4Zohs9Q", title: "La Fuga" },
+    { youtubeId: "XvXnaZfjbOo", title: "Quiero Que Seas Mi Estrella (Live)" },
+    { youtubeId: "pfQeG5PEut4", title: "Parranda, Ron y Mujer (Live)" },
+  ],
 
   gallery: [
-    { src: "/gallery/1.jpg", alt: "Pipe Cumbe en tarima" },
-    { src: "/gallery/2.jpg", alt: "Pipe Cumbe en estudio" },
-    { src: "/gallery/3.jpg", alt: "Pipe Cumbe en concierto" },
-    { src: "/gallery/4.jpg", alt: "Pipe Cumbe con su agrupación" },
-    { src: "/gallery/5.jpg", alt: "Pipe Cumbe presentación" },
-    { src: "/gallery/6.jpg", alt: "Pipe Cumbe backstage" },
-  ],
+    { src: "/gallery/g2.jpg", alt: "Pipe Cumbe en tarima", width: 1600, height: 2000 },
+    { src: "/gallery/g3.jpg", alt: "Pipe Cumbe en presentación", width: 1512, height: 2000 },
+    { src: "/gallery/g4.jpg", alt: "Pipe Cumbe en concierto", width: 1324, height: 1952 },
+    { src: "/gallery/g5.jpg", alt: "Pipe Cumbe cantando en vivo", width: 1600, height: 2000 },
+    { src: "/gallery/g6.jpg", alt: "Pipe Cumbe en evento", width: 1600, height: 2000 },
+    { src: "/gallery/g7.jpg", alt: "Pipe Cumbe con su agrupación", width: 1499, height: 2000 },
+    { src: "/gallery/g1.jpg", alt: "Pipe Cumbe con la banda en vivo", width: 2000, height: 1635, featured: true },
+  ] as GalleryItem[],
+};
+
+export type GalleryItem = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  featured?: boolean;
 };
 
 export type Site = typeof site;
