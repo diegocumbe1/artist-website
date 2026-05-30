@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #f5f5f5;
-  --surface: #141414;
-  --surface-2: #1f1f1f;
-  --border: #2a2a2a;
-  --muted: #a3a3a3;
+  --background: #050505;
+  --foreground: #fff7ed;
+  --surface: #090909;
+  --surface-2: #0d0d0d;
+  --border: #2b2118;
+  --muted: #b8aa96;
   --accent: #f59e0b;
-  --accent-2: #ef4444;
+  --accent-2: #ea580c;
 }
 
 @theme inline {
@@ -40,18 +40,19 @@ body {
 .brand-gradient {
   background-image: linear-gradient(
     135deg,
-    #f59e0b 0%,
-    #ef4444 55%,
-    #b45309 100%
+    #fbbf24 0%,
+    #ea580c 55%,
+    #c2410c 100%
   );
 }
 
 .brand-text-gradient {
   background-image: linear-gradient(
     135deg,
-    #fde68a 0%,
-    #f59e0b 35%,
-    #ef4444 75%
+    #fff7ed 0%,
+    #fbbf24 32%,
+    #ea580c 72%,
+    #c2410c 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -66,6 +67,14 @@ body {
     var(--border),
     transparent
   );
+}
+
+.cinematic-grain {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 3px 3px;
+  mix-blend-mode: soft-light;
 }
 
 /* ----- Hero animations ----- */

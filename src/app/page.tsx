@@ -1,67 +1,42 @@
 import Image from "next/image";
 import { site } from "@/data/site";
+import { BookingForm } from "@/components/BookingForm";
+import { FloatingBookingCTA } from "@/components/FloatingBookingCTA";
 import { Gallery as GalleryGrid } from "@/components/Gallery";
+import { JsonLd } from "@/components/JsonLd";
 import { VideoCarousel } from "@/components/VideoCarousel";
+import { artistJsonLd, faqJsonLd, imagesJsonLd, videosJsonLd } from "@/lib/seo";
+
+const homeFaqs = site.faqs.slice(0, 4);
 
 export default function Home() {
   return (
     <>
-      <NavBar />
+      <JsonLd
+        data={[
+          artistJsonLd(),
+          faqJsonLd(homeFaqs),
+          ...videosJsonLd(),
+          ...imagesJsonLd(),
+        ]}
+      />
       <main className="flex-1">
         <Hero />
+        <Authority />
         <Bio />
+        <Presentations />
         <Music />
         <FeaturedVideo />
         <Gallery />
+        <Testimonials />
+        <LocalSearchSection />
+        <FaqSection />
         <Social />
         <Booking />
       </main>
+      <FloatingBookingCTA />
       <Footer />
     </>
-  );
-}
-
-/* -------------------------------- NAVBAR -------------------------------- */
-
-function NavBar() {
-  const links = [
-    { href: "#sobre", label: "Sobre" },
-    { href: "#musica", label: "Música" },
-    { href: "#video", label: "Video" },
-    { href: "#galeria", label: "Galería" },
-    { href: "#contacto", label: "Contacto" },
-  ];
-
-  return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-background/70 border-b border-[color:var(--border)]">
-      <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
-        <a
-          href="#top"
-          className="font-impact text-2xl tracking-wider brand-text-gradient"
-        >
-          {site.artistName.toUpperCase()}
-        </a>
-        <nav className="hidden md:flex items-center gap-7 text-sm text-[color:var(--muted)]">
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="hover:text-foreground transition-colors"
-            >
-              {l.label}
-            </a>
-          ))}
-        </nav>
-        <a
-          href={site.contact.bookingWhatsapp}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="brand-gradient text-black font-semibold text-sm px-4 py-2 rounded-full hover:opacity-90 transition-opacity"
-        >
-          Contratar
-        </a>
-      </div>
-    </header>
   );
 }
 
@@ -73,7 +48,7 @@ function Hero() {
       id="top"
       className="relative isolate overflow-hidden min-h-[100svh] flex items-center"
     >
-      {/* Background image with slow Ken Burns motion */}
+      {/* Background image with slow Ken Burns motion. Drop /public/hero/stage-loop.mp4 to activate the video layer. */}
       <div className="absolute inset-0 -z-20">
         <div className="absolute inset-0 animate-ken-burns">
           <Image
@@ -85,17 +60,30 @@ function Hero() {
             className="object-cover object-[60%_30%] md:object-[70%_30%]"
           />
         </div>
+        {/* <video
+          className="absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-screen"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={site.heroImage.src}
+          aria-hidden
+        >
+          <source src="/hero/stage-loop.mp4" type="video/mp4" />
+        </video> */}
       </div>
 
       {/* Dark gradient overlays for legibility */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/85 md:via-background/70 to-background/30 md:to-transparent" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background/40" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#050505] via-[#050505]/88 md:via-[#090909]/72 to-[#0d0d0d]/35 md:to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#050505] via-[#090909]/15 to-[#050505]/45" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(115deg,rgba(251,191,36,0.08),transparent_34%,rgba(194,65,12,0.13)_100%)]" />
+      <div className="absolute inset-0 -z-10 cinematic-grain opacity-45" />
 
       {/* Animated stage-light glows */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-[-10%] w-[55vw] h-[55vw] rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.45),transparent_60%)] blur-3xl animate-glow-a" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[radial-gradient(circle,rgba(239,68,68,0.35),transparent_60%)] blur-3xl animate-glow-b" />
-        <div className="absolute top-[10%] right-[20%] w-[35vw] h-[35vw] rounded-full bg-[radial-gradient(circle,rgba(168,85,247,0.18),transparent_65%)] blur-3xl animate-glow-a" />
+        <div className="absolute top-1/4 left-[-10%] h-[55vw] w-[55vw] rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.38),transparent_60%)] blur-3xl animate-glow-a" />
+        <div className="absolute bottom-[-20%] right-[-10%] h-[60vw] w-[60vw] rounded-full bg-[radial-gradient(circle,rgba(194,65,12,0.34),transparent_60%)] blur-3xl animate-glow-b" />
+        <div className="absolute top-[10%] right-[20%] h-[35vw] w-[35vw] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.14),transparent_65%)] blur-3xl animate-glow-a" />
       </div>
 
       {/* Vignette */}
@@ -105,7 +93,7 @@ function Hero() {
         <div className="animate-hero-fade-up [animation-delay:80ms]">
           <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--muted)] mb-4">
             <span className="inline-block w-8 h-px align-middle bg-[color:var(--accent)] mr-3" />
-            Artista · Vallenato XXI
+            Vallenato en vivo · Booking profesional
           </p>
         </div>
 
@@ -116,7 +104,7 @@ function Hero() {
         </h1>
 
         <p className="animate-hero-fade-up [animation-delay:320ms] mt-6 max-w-xl text-lg md:text-xl text-foreground/80">
-          {site.tagline}
+          {site.bookingHeadline}
         </p>
 
         <div className="animate-hero-fade-up [animation-delay:460ms] mt-10 flex flex-wrap gap-3">
@@ -124,19 +112,17 @@ function Hero() {
             href={site.contact.bookingWhatsapp}
             target="_blank"
             rel="noopener noreferrer"
-            className="brand-gradient text-black font-semibold px-6 py-3 rounded-full hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all inline-flex items-center gap-2 shadow-lg shadow-amber-500/20"
+            className="brand-gradient inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white shadow-[0_0_40px_rgba(245,158,11,0.18)] transition-all hover:scale-[1.02] hover:opacity-90 active:scale-[0.98]"
           >
             <WhatsAppIcon className="w-5 h-5" />
-            Contratar por WhatsApp
+            Contratar para evento
           </a>
           <a
-            href={site.social.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="backdrop-blur-sm bg-white/5 border border-white/15 hover:border-white/40 hover:bg-white/10 text-foreground font-semibold px-6 py-3 rounded-full inline-flex items-center gap-2 transition-colors"
+            href="#video"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 font-semibold text-foreground backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06]"
           >
-            <InstagramIcon className="w-5 h-5" />
-            Instagram
+            <PlayOutlineIcon className="w-5 h-5" />
+            Ver show en vivo
           </a>
         </div>
       </div>
@@ -156,17 +142,164 @@ function Hero() {
   );
 }
 
+/* ------------------------------- AUTHORITY ------------------------------ */
+
+function Authority() {
+  return (
+    <section className="border-t border-orange-950/50 bg-[#090909]/70">
+      <div className="mx-auto grid max-w-6xl grid-cols-2 divide-x divide-y divide-[color:var(--border)] px-6 md:grid-cols-4 md:divide-y-0">
+        {site.stats.map((stat) => (
+          <div key={stat.label} className="py-8 md:py-10 md:px-6">
+            <p className="font-impact text-4xl md:text-5xl tracking-wide brand-text-gradient">
+              {stat.value}
+            </p>
+            <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[color:var(--muted)]">
+              {stat.label}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ---------------------------------- BIO --------------------------------- */
 
 function Bio() {
   return (
-    <section id="sobre" className="py-24 border-t border-[color:var(--border)]">
+    <section id="sobre" className="border-t border-[color:var(--border)] bg-[#050505] py-24">
       <div className="mx-auto max-w-4xl px-6">
         <SectionHeading eyebrow="Sobre el artista" title="La voz del vallenato XXI" />
         <div className="space-y-5 text-lg leading-relaxed text-[color:var(--muted)]">
           {site.bio.map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------------------- PRESENTATIONS ---------------------------- */
+
+function Presentations() {
+  const photos = site.gallery.slice(0, 4);
+  const featuredPhoto = photos[0];
+  const secondaryPhotos = photos.slice(1, 4);
+
+  return (
+    <section
+      id="presentaciones"
+      className="relative overflow-hidden border-t border-[color:var(--border)] py-24 md:py-32"
+    >
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_82%_20%,rgba(245,158,11,0.22),transparent_32%),radial-gradient(circle_at_15%_75%,rgba(194,65,12,0.16),transparent_36%),linear-gradient(120deg,rgba(5,5,5,0.96),rgba(13,13,13,0.78),rgba(5,5,5,0.98))]" />
+      <div className="absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+      <div className="absolute left-1/2 top-16 -z-10 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-amber-500/10 blur-3xl" />
+
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="relative z-10">
+          <p className="mb-4 inline-flex items-center gap-3 text-xs uppercase tracking-[0.32em] text-[color:var(--accent)]">
+            <span className="h-px w-10 bg-[color:var(--accent)]" />
+            Presentaciones
+          </p>
+
+          <h2 className="font-impact text-5xl leading-[0.95] tracking-tight md:text-7xl">
+            Un show vallenato con presencia de tarima
+          </h2>
+
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-foreground/70">
+            {site.bookingDescription} Una propuesta moderna, emocional y lista
+            para eventos privados, festivales, ferias y escenarios de gran formato.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-2">
+            {site.eventTypes.map((type) => (
+              <span
+                key={type}
+                className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-foreground/80 backdrop-blur-md transition-colors hover:border-amber-300/50 hover:bg-amber-300/10"
+              >
+                {type}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-10 flex flex-wrap gap-3">
+            <a
+              href="#contacto"
+              className="brand-gradient inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white shadow-[0_0_40px_rgba(245,158,11,0.18)] transition-all hover:scale-[1.02] hover:opacity-90 active:scale-[0.98]"
+            >
+              <CalendarIcon className="h-5 w-5" />
+              Ver disponibilidad
+            </a>
+            <a
+              href="#video"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-foreground backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06]"
+            >
+              <PlayOutlineIcon className="h-5 w-5" />
+              Ver videos en vivo
+            </a>
+          </div>
+        </div>
+
+        <div className="relative grid gap-4 sm:grid-cols-2 lg:block lg:min-h-[620px]">
+          <div className="pointer-events-none absolute left-0 top-8 h-72 w-56 rounded-[2rem] border border-amber-300/20 bg-amber-300/10 blur-2xl" />
+          <div className="pointer-events-none absolute bottom-8 right-0 h-72 w-72 rounded-full border border-orange-400/10 bg-orange-700/10 blur-3xl" />
+
+          {featuredPhoto && (
+            <div className="group relative overflow-hidden rounded-[1.35rem] border border-white/15 bg-white/[0.05] p-2 shadow-2xl shadow-black/40 backdrop-blur-xl sm:col-span-2 lg:absolute lg:left-0 lg:top-0 lg:w-[58%] lg:rounded-[2rem]">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-[1rem] lg:rounded-[1.55rem]">
+                <Image
+                  src={featuredPhoto.src}
+                  alt={featuredPhoto.alt}
+                  fill
+                  sizes="(max-width: 768px) 80vw, 420px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div className="absolute bottom-5 left-5 right-5">
+                  <p className="text-xs uppercase tracking-[0.25em] text-amber-300">
+                    Show en vivo
+                  </p>
+                  <p className="mt-1 font-impact text-3xl tracking-wide text-white">
+                    Tarima & energía
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {secondaryPhotos.map((photo, index) => {
+            const positions = [
+              "lg:right-0 lg:top-8 lg:w-[46%] lg:rotate-2",
+              "lg:right-8 lg:top-[270px] lg:w-[43%] lg:-rotate-2",
+              "lg:left-[28%] lg:bottom-0 lg:w-[48%] lg:rotate-1",
+            ];
+
+            return (
+              <div
+                key={photo.src}
+                className={`group relative overflow-hidden rounded-[1.35rem] border border-white/15 bg-white/[0.05] p-2 shadow-2xl shadow-black/35 backdrop-blur-xl transition-transform duration-500 hover:z-20 hover:-translate-y-1 lg:absolute lg:rounded-[1.6rem] lg:hover:-translate-y-2 lg:hover:rotate-0 ${positions[index]}`}
+              >
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[1rem] sm:aspect-[4/3] lg:rounded-[1.2rem]">
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    fill
+                    sizes="(max-width: 768px) 70vw, 320px"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+                </div>
+              </div>
+            );
+          })}
+
+          <div className="rounded-2xl border border-orange-300/20 bg-black/55 px-5 py-4 text-sm text-foreground/80 shadow-xl backdrop-blur-xl sm:col-span-2 lg:absolute lg:bottom-14 lg:left-0">
+            <p className="font-semibold text-white">Disponible para contratación</p>
+            <p className="mt-1 text-xs text-[color:var(--muted)]">
+              Ferias · Festivales · Eventos privados
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -181,24 +314,24 @@ function Music() {
       name: "Spotify",
       url: site.social.spotify,
       icon: SpotifyIcon,
-      color: "from-green-500/20 to-green-500/0",
+      color: "from-amber-400/15 to-orange-700/0",
     },
     {
       name: "YouTube",
       url: site.social.youtube,
       icon: YouTubeIcon,
-      color: "from-red-500/20 to-red-500/0",
+      color: "from-orange-500/20 to-amber-400/0",
     },
     {
       name: "Apple Music",
       url: site.social.appleMusic,
       icon: AppleMusicIcon,
-      color: "from-pink-500/20 to-pink-500/0",
+      color: "from-orange-300/15 to-orange-900/0",
     },
   ];
 
   return (
-    <section id="musica" className="py-24 border-t border-[color:var(--border)] bg-[color:var(--surface)]/40">
+    <section id="musica" className="border-t border-[color:var(--border)] bg-[#090909]/70 py-24">
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading eyebrow="Escúchame" title="Disponible en todas las plataformas" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -212,10 +345,10 @@ function Music() {
                 target={disabled ? undefined : "_blank"}
                 rel="noopener noreferrer"
                 aria-disabled={disabled}
-                className={`group relative overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 h-32 flex items-center justify-between transition-all ${
+                className={`group relative flex h-32 items-center justify-between overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md transition-all ${
                   disabled
                     ? "opacity-40 cursor-not-allowed"
-                    : "hover:border-foreground/40 hover:-translate-y-0.5"
+                    : "hover:-translate-y-0.5 hover:border-orange-300/40 hover:bg-white/[0.06]"
                 }`}
               >
                 <div
@@ -258,7 +391,7 @@ function Gallery() {
   return (
     <section
       id="galeria"
-      className="py-24 border-t border-[color:var(--border)] bg-[color:var(--surface)]/40"
+      className="border-t border-[color:var(--border)] bg-[#090909]/70 py-24"
     >
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading eyebrow="Galería" title="Momentos en vivo" />
@@ -266,6 +399,168 @@ function Gallery() {
         <p className="mt-6 text-xs text-[color:var(--muted)]">
           Haz click en cualquier imagen para verla en grande.
         </p>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------------------- TESTIMONIALS ----------------------------- */
+
+function Testimonials() {
+  return (
+    <section className="py-24 border-t border-[color:var(--border)]">
+      <div className="mx-auto max-w-6xl px-6">
+        <SectionHeading eyebrow="Credibilidad" title="Eventos y testimonios" />
+        <div className="grid gap-4 md:grid-cols-3">
+          {site.testimonials.map((item) => (
+            <figure
+              key={`${item.author}-${item.location}`}
+              className="rounded-lg border border-white/10 bg-white/[0.035] p-6 backdrop-blur-md"
+            >
+              <blockquote className="text-lg leading-relaxed text-foreground/85">
+                “{item.quote}”
+              </blockquote>
+              <figcaption className="mt-6 text-sm text-[color:var(--muted)]">
+                {item.author} · {item.location}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------- LOCAL SEO ----------------------------- */
+
+function LocalSearchSection() {
+  const services = [
+    "Cantante vallenato en Garzón, Huila",
+    "Parranda vallenata para eventos privados",
+    "Show vallenato en vivo para ferias y fiestas",
+    "Grupo vallenato para matrimonios y celebraciones",
+    "Artista vallenato para festivales y tarimas",
+    "Vallenato en vivo para empresas",
+  ];
+
+  const areas = [
+    "Garzón",
+    "Neiva",
+    "Pitalito",
+    "Huila",
+    "Bogotá",
+    "Villavicencio",
+    "Medellín",
+    "Cali",
+    "Toda Colombia",
+  ];
+
+  return (
+    <section className="relative overflow-hidden border-t border-[color:var(--border)] bg-[#050505] py-24">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_20%,rgba(245,158,11,0.14),transparent_34%),radial-gradient(circle_at_85%_80%,rgba(194,65,12,0.16),transparent_36%)]" />
+
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+        <div>
+          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[color:var(--accent)]">
+            Vallenato para eventos
+          </p>
+          <h2 className="font-impact text-4xl tracking-tight md:text-6xl">
+            Cantante vallenato para eventos en Huila, Garzón y Colombia
+          </h2>
+          <div className="mt-6 space-y-5 text-lg leading-relaxed text-[color:var(--muted)]">
+            <p>
+              Pipe Cumbe está disponible para shows vallenatos en vivo,
+              parrandas vallenatas, ferias, fiestas patronales, matrimonios,
+              eventos privados y festivales en Garzón, Huila y diferentes
+              ciudades de Colombia.
+            </p>
+            <p>
+              La propuesta combina repertorio vallenato, presencia de tarima y
+              coordinación profesional para que organizadores, empresas y
+              familias puedan contratar un artista vallenato con una
+              presentación clara, energética y lista para el evento.
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="/contratar-cantante-vallenato"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-foreground backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06]"
+            >
+              Contratar cantante vallenato
+            </a>
+            <a
+              href="/eventos"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-foreground backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06]"
+            >
+              Eventos vallenatos
+            </a>
+          </div>
+        </div>
+
+        <div className="grid gap-4">
+          <div className="rounded-lg border border-orange-300/15 bg-white/[0.035] p-5 backdrop-blur-md">
+            <h3 className="font-impact text-3xl tracking-wide text-white">
+              Servicios más buscados
+            </h3>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {services.map((service) => (
+                <p
+                  key={service}
+                  className="rounded-md border border-white/10 bg-[#0d0d0d]/80 px-4 py-3 text-sm text-foreground/80"
+                >
+                  {service}
+                </p>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
+            <h3 className="font-impact text-3xl tracking-wide text-white">
+              Cobertura
+            </h3>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {areas.map((area) => (
+                <span
+                  key={area}
+                  className="rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-sm text-foreground/75"
+                >
+                  {area}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------- FAQ --------------------------------- */
+
+function FaqSection() {
+  return (
+    <section className="border-t border-[color:var(--border)] bg-[#090909]/70 py-20">
+      <div className="mx-auto max-w-4xl px-6">
+        <SectionHeading eyebrow="Dudas rápidas" title="Contratar show vallenato" />
+        <div className="divide-y divide-white/10 rounded-lg border border-white/10 bg-white/[0.03] backdrop-blur-md">
+          {homeFaqs.map((faq) => (
+            <article key={faq.question} className="p-6">
+              <h3 className="text-xl font-semibold text-white">{faq.question}</h3>
+              <p className="mt-3 leading-relaxed text-[color:var(--muted)]">
+                {faq.answer}
+              </p>
+            </article>
+          ))}
+        </div>
+        <div className="mt-6 flex justify-center">
+          <a
+            href="/contratar-cantante-vallenato"
+            className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-foreground/80 backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06] hover:text-white"
+          >
+            Ver guía completa de contratación
+          </a>
+        </div>
       </div>
     </section>
   );
@@ -299,10 +594,10 @@ function Social() {
                 target={disabled ? undefined : "_blank"}
                 rel="noopener noreferrer"
                 aria-disabled={disabled}
-                className={`inline-flex items-center gap-2 px-5 py-3 rounded-full border border-[color:var(--border)] text-sm font-medium transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium backdrop-blur-md transition-colors ${
                   disabled
                     ? "opacity-40 cursor-not-allowed"
-                    : "hover:border-foreground/60 hover:bg-[color:var(--surface)]"
+                    : "hover:border-orange-300/40 hover:bg-white/[0.06]"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -322,9 +617,10 @@ function Booking() {
   return (
     <section
       id="contacto"
-      className="py-24 border-t border-[color:var(--border)] relative overflow-hidden"
+      className="relative overflow-hidden border-t border-[color:var(--border)] bg-[#090909] py-24"
     >
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_50%,rgba(245,158,11,0.12),transparent_60%)]" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_10%,rgba(245,158,11,0.14),transparent_48%),radial-gradient(circle_at_15%_85%,rgba(194,65,12,0.14),transparent_38%),linear-gradient(180deg,#050505_0%,#090909_42%,#050505_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-px bg-gradient-to-r from-transparent via-orange-300/40 to-transparent" />
       <div className="mx-auto max-w-3xl px-6 text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--accent)] mb-4">
           Contrataciones
@@ -332,23 +628,21 @@ function Booking() {
         <h2 className="font-impact text-5xl md:text-7xl tracking-tight mb-6">
           ¿Quieres a Pipe Cumbe en tu evento?
         </h2>
-        <p className="text-lg text-[color:var(--muted)] mb-10">
+        <p className="mb-4 text-lg text-[color:var(--muted)]">
           Disponible para conciertos, festivales, parrandas privadas y eventos
           corporativos en Colombia y exterior.
         </p>
+        <p className="mx-auto mb-10 max-w-2xl text-base leading-relaxed text-foreground/70">
+          Cuéntanos la fecha, ciudad, tipo de evento y número de asistentes. Te
+          responderemos con disponibilidad y propuesta de presentación.
+        </p>
+        <div className="mb-8 text-left">
+          <BookingForm />
+        </div>
         <div className="flex flex-wrap justify-center gap-3">
           <a
-            href={site.contact.bookingWhatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="brand-gradient text-black font-semibold px-7 py-4 rounded-full hover:opacity-90 transition-opacity inline-flex items-center gap-2 text-lg"
-          >
-            <WhatsAppIcon className="w-5 h-5" />
-            Escribir por WhatsApp
-          </a>
-          <a
             href={`tel:+57${site.contact.bookingPhone}`}
-            className="border border-[color:var(--border)] hover:border-foreground text-foreground font-semibold px-7 py-4 rounded-full inline-flex items-center gap-2 text-lg transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-7 py-4 text-lg font-semibold text-foreground backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06]"
           >
             <PhoneIcon className="w-5 h-5" />
             {site.contact.bookingPhone}
@@ -362,11 +656,59 @@ function Booking() {
 /* -------------------------------- FOOTER -------------------------------- */
 
 function Footer() {
+  const socials = [
+    { url: site.social.instagram, label: "Instagram" },
+    { url: site.social.youtube, label: "YouTube" },
+    { url: site.social.tiktok, label: "TikTok" },
+    { url: site.social.facebook, label: "Facebook" },
+    { url: site.social.spotify, label: "Spotify" },
+    { url: site.social.appleMusic, label: "Apple Music" },
+  ].filter((item) => item.url);
+
   return (
-    <footer className="border-t border-[color:var(--border)] py-10 text-center text-sm text-[color:var(--muted)]">
-      <p>
-        © {new Date().getFullYear()} {site.artistName}. Todos los derechos reservados.
-      </p>
+    <footer className="border-t border-orange-950/50 bg-[#050505] py-12 text-sm text-[color:var(--muted)]">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="font-impact text-3xl tracking-wider brand-text-gradient">
+            {site.artistName.toUpperCase()}
+          </p>
+          <p className="mt-3 max-w-md text-foreground/70">
+            Vallenato en vivo para eventos, ferias y festivales.
+          </p>
+          <div className="mt-5 space-y-1 text-xs text-foreground/45">
+            <p>
+              © {new Date().getFullYear()} {site.artistName}. Todos los derechos reservados.
+            </p>
+            <p>
+              Creative Direction &amp; Development —{" "}
+              <a
+                href="https://github.com/diegocumbe1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-foreground/55 transition-colors hover:text-amber-300"
+              >
+                Diego Cumbe
+              </a>
+            </p>
+          </div>
+        </div>
+
+        {socials.length > 0 && (
+          <nav aria-label="Redes sociales" className="flex flex-wrap gap-3">
+            {socials.map((item) => (
+              <a
+                key={item.label}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/75 backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06] hover:text-white"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        )}
+      </div>
     </footer>
   );
 }
@@ -466,6 +808,26 @@ function PhoneIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+}
+
+function PlayOutlineIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M10 8l6 4-6 4V8z" />
+    </svg>
+  );
+}
+
+function CalendarIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
   );
 }

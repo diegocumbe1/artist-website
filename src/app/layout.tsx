@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Bebas_Neue } from "next/font/google";
 import "./globals.css";
+import { SiteHeader } from "@/components/SiteHeader";
 import { site } from "@/data/site";
+import { pageMetadata } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,21 +17,11 @@ const bebas = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: `${site.artistName} · ${site.tagline}`,
-  description: site.shortDescription,
-  metadataBase: new URL("https://pipecumbe.com"),
-  openGraph: {
-    title: `${site.artistName} · ${site.tagline}`,
+  metadataBase: new URL(site.siteUrl),
+  ...pageMetadata({
+    title: site.seoTitle,
     description: site.shortDescription,
-    type: "website",
-    locale: "es_CO",
-    siteName: site.artistName,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${site.artistName} · ${site.tagline}`,
-    description: site.shortDescription,
-  },
+  }),
 };
 
 export default function RootLayout({
@@ -43,6 +35,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${bebas.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <SiteHeader />
         {children}
       </body>
     </html>
