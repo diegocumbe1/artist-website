@@ -67,9 +67,9 @@ export const site = {
   },
 
   videos: [
-    { youtubeId: "b4Va4Zohs9Q", title: "La Fuga" },
-    { youtubeId: "XvXnaZfjbOo", title: "Quiero Que Seas Mi Estrella (Live)" },
-    { youtubeId: "pfQeG5PEut4", title: "Parranda, Ron y Mujer (Live)" },
+    { youtubeId: "b4Va4Zohs9Q", title: "La Fuga", uploadDate: "2024-01-15" },
+    { youtubeId: "XvXnaZfjbOo", title: "Quiero Que Seas Mi Estrella (Live)", uploadDate: "2024-03-20" },
+    { youtubeId: "pfQeG5PEut4", title: "Parranda, Ron y Mujer (Live)", uploadDate: "2024-06-10" },
   ],
 
   stats: [
