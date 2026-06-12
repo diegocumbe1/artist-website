@@ -55,7 +55,7 @@ export const site = {
   social: {
     instagram: "https://www.instagram.com/pipecumbe/",
     youtube: "https://www.youtube.com/@VALLENATOXXI",
-    tiktok: "",
+    tiktok: "https://www.tiktok.com/@pipecumbe",
     facebook: "",
     spotify: "",
     appleMusic: "",
