@@ -65,15 +65,20 @@ export function artistJsonLd() {
     "@type": ["Person", "MusicGroup"],
     "@id": absoluteUrl("/#artist"),
     name: site.artistName,
-    alternateName: site.legalName,
+    alternateName: [site.realName, site.legalName],
+    birthName: site.realName,
     url: site.siteUrl,
     image: absoluteUrl(site.heroImage.src),
-    description: site.shortDescription,
+    description: site.entityDescription,
     genre: ["Vallenato", "Música colombiana"],
     areaServed: ["Garzón", "Huila", "Neiva", "Colombia", "Latinoamérica"],
     homeLocation: {
       "@type": "Place",
-      name: "Huila, Colombia",
+      name: site.birthPlace,
+    },
+    birthPlace: {
+      "@type": "Place",
+      name: site.birthPlace,
     },
     knowsAbout: [
       "cantante vallenato",
@@ -97,6 +102,92 @@ export function artistJsonLd() {
       areaServed: "CO",
       availableLanguage: ["Spanish"],
     },
+  };
+}
+
+export function organizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": absoluteUrl("/#organization"),
+    name: site.legalName,
+    alternateName: site.artistName,
+    url: site.siteUrl,
+    logo: absoluteUrl("/og/pipe-cumbe-og.webp"),
+    image: absoluteUrl(site.heroImage.src),
+    description: site.entityDescription,
+    areaServed: ["Huila", "Garzón", "Neiva", "Colombia"],
+    sameAs: [
+      site.social.instagram,
+      site.social.youtube,
+      site.social.tiktok,
+      site.social.facebook,
+      site.social.spotify,
+      site.social.appleMusic,
+    ].filter(Boolean),
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: `+57${site.contact.bookingPhone}`,
+      contactType: "booking",
+      areaServed: "CO",
+      availableLanguage: ["es"],
+    },
+  };
+}
+
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": absoluteUrl("/#website"),
+    name: site.legalName,
+    alternateName: site.artistName,
+    url: site.siteUrl,
+    inLanguage: "es-CO",
+    publisher: {
+      "@id": absoluteUrl("/#organization"),
+    },
+    about: {
+      "@id": absoluteUrl("/#artist"),
+    },
+  };
+}
+
+export function bookingServiceJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": absoluteUrl("/contratar-cantante-vallenato#service"),
+    name: "Show vallenato en vivo de Pipe Cumbe",
+    serviceType: "Cantante vallenato para eventos",
+    provider: {
+      "@id": absoluteUrl("/#artist"),
+    },
+    areaServed: site.cities,
+    audience: {
+      "@type": "Audience",
+      audienceType:
+        "Organizadores de eventos, empresas, alcaldías, familias y parejas",
+    },
+    description: site.bookingDescription,
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      url: absoluteUrl("/contratar-cantante-vallenato"),
+    },
+  };
+}
+
+export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path),
+    })),
   };
 }
 

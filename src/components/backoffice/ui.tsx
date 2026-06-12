@@ -54,7 +54,7 @@ export function Kpi({
 
   return (
     <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
-      <p className="text-xs uppercase tracking-[0.2em] text-[color:var(--muted)]">{label}</p>
+      <p className="text-xs uppercase leading-snug tracking-[0.12em] text-[color:var(--muted)]">{label}</p>
       <p className={`mt-3 font-impact text-4xl tracking-wide ${toneClass}`}>{value}</p>
       {hint && <p className="mt-2 text-xs text-[color:var(--muted)]">{hint}</p>}
     </div>
@@ -74,7 +74,7 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-[color:var(--muted)]">
+      <span className="mb-2 block text-xs uppercase leading-snug tracking-[0.12em] text-[color:var(--muted)]">
         {label}
       </span>
       <input
@@ -98,7 +98,7 @@ export function CurrencyField({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-[color:var(--muted)]">
+      <span className="mb-2 block text-xs uppercase leading-snug tracking-[0.12em] text-[color:var(--muted)]">
         {label}
       </span>
       <input
@@ -132,7 +132,7 @@ export function SelectField({
 
   return (
     <label className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-[color:var(--muted)]">
+      <span className="mb-2 block text-xs uppercase leading-snug tracking-[0.12em] text-[color:var(--muted)]">
         {label}
       </span>
       <select

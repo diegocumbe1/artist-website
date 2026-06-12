@@ -5,7 +5,15 @@ import { FloatingBookingCTA } from "@/components/FloatingBookingCTA";
 import { Gallery as GalleryGrid } from "@/components/Gallery";
 import { JsonLd } from "@/components/JsonLd";
 import { VideoCarousel } from "@/components/VideoCarousel";
-import { artistJsonLd, faqJsonLd, imagesJsonLd, videosJsonLd } from "@/lib/seo";
+import {
+  artistJsonLd,
+  bookingServiceJsonLd,
+  faqJsonLd,
+  imagesJsonLd,
+  organizationJsonLd,
+  videosJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
 
 const homeFaqs = site.faqs.slice(0, 4);
 
@@ -14,7 +22,10 @@ export default function Home() {
     <>
       <JsonLd
         data={[
+          websiteJsonLd(),
+          organizationJsonLd(),
           artistJsonLd(),
+          bookingServiceJsonLd(),
           faqJsonLd(homeFaqs),
           ...videosJsonLd(),
           ...imagesJsonLd(),
@@ -495,6 +506,18 @@ function LocalSearchSection() {
             >
               Eventos vallenatos
             </a>
+            <a
+              href="/cantante-vallenato-huila"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-foreground backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06]"
+            >
+              Vallenato en Huila
+            </a>
+            <a
+              href="/grupo-vallenato-para-eventos"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-foreground backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06]"
+            >
+              Grupo para eventos
+            </a>
           </div>
         </div>
 
@@ -665,9 +688,18 @@ function Footer() {
     { url: site.social.appleMusic, label: "Apple Music" },
   ].filter((item) => item.url);
 
+  const quickLinks = [
+    { href: "/contratar-cantante-vallenato", label: "Contrataciones" },
+    { href: "/prensa", label: "Press kit" },
+    { href: "/cantante-vallenato-huila", label: "Vallenato en Huila" },
+    { href: "/cantante-vallenato-garzon", label: "Vallenato en Garzón" },
+    { href: "/cantante-vallenato-neiva", label: "Vallenato en Neiva" },
+    { href: "/grupo-vallenato-para-eventos", label: "Grupo para eventos" },
+  ];
+
   return (
     <footer className="border-t border-orange-950/50 bg-[#050505] py-12 text-sm text-[color:var(--muted)]">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 md:flex-row md:items-end md:justify-between">
+      <div className="mx-auto grid max-w-6xl gap-8 px-6 md:grid-cols-[1.2fr_1fr] md:items-end">
         <div>
           <p className="font-impact text-3xl tracking-wider brand-text-gradient">
             {site.artistName.toUpperCase()}
@@ -693,21 +725,34 @@ function Footer() {
           </div>
         </div>
 
-        {socials.length > 0 && (
-          <nav aria-label="Redes sociales" className="flex flex-wrap gap-3">
-            {socials.map((item) => (
+        <div className="space-y-5 md:text-right">
+          <nav aria-label="Páginas principales" className="flex flex-wrap gap-3 md:justify-end">
+            {quickLinks.map((item) => (
               <a
                 key={item.label}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={item.href}
                 className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/75 backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06] hover:text-white"
               >
                 {item.label}
               </a>
             ))}
           </nav>
-        )}
+          {socials.length > 0 && (
+            <nav aria-label="Redes sociales" className="flex flex-wrap gap-3 md:justify-end">
+              {socials.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/75 backdrop-blur-md transition-colors hover:border-orange-300/40 hover:bg-white/[0.06] hover:text-white"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          )}
+        </div>
       </div>
     </footer>
   );

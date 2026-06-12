@@ -1,7 +1,9 @@
 export const site = {
   artistName: "Pipe Cumbe",
+  realName: "Andrés Felipe Cumbe",
   legalName: "Pipe Cumbe Oficial",
-  siteUrl: "https://pipecumbe.com",
+  birthPlace: "Garzón, Huila, Colombia",
+  siteUrl: "https://pipecumbeoficial.com",
   tagline: "Vallenato XXI · Con todos los poderes",
   seoTitle:
     "Pipe Cumbe | Cantante Vallenato en Huila, Garzón y Colombia",
@@ -11,6 +13,8 @@ export const site = {
     "Cantante vallenato para eventos, parrandas y festivales en Huila y Colombia",
   bookingDescription:
     "Show vallenato en vivo para ferias y fiestas, eventos privados, matrimonios, parrandas vallenatas, festivales, conciertos y eventos corporativos.",
+  entityDescription:
+    "Andrés Felipe Cumbe, conocido artísticamente como Pipe Cumbe, es un cantante vallenato colombiano nacido en Garzón, Huila. Su propuesta de Vallenato XXI está disponible para shows en vivo, parrandas vallenatas, ferias, fiestas, matrimonios, eventos privados, festivales y eventos corporativos en Huila, Garzón, Neiva y toda Colombia.",
   keywords: [
     "cantante vallenato en huila",
     "cantante vallenato en garzón",
@@ -39,6 +43,13 @@ export const site = {
     bookingWhatsapp:
       "https://wa.me/573142653942?text=Hola%20Pipe%2C%20me%20interesa%20contratarte%20para%20un%20evento",
     email: "",
+  },
+
+  pressKit: {
+    pdfPath: "",
+    expectedPdfPath: "/press/pipe-cumbe-press-kit.pdf",
+    whatsappMessage:
+      "https://wa.me/573142653942?text=Hola%2C%20quiero%20recibir%20el%20press%20kit%20de%20Pipe%20Cumbe%20y%20consultar%20informaci%C3%B3n%20para%20un%20evento",
   },
 
   social: {
@@ -114,6 +125,21 @@ export const site = {
 
   faqs: [
     {
+      question: "¿Quién es Pipe Cumbe?",
+      answer:
+        "Pipe Cumbe es el nombre artístico de Andrés Felipe Cumbe, cantante vallenato colombiano nacido en Garzón, Huila. Su propuesta de Vallenato XXI está disponible para ferias, fiestas, parrandas vallenatas, matrimonios, eventos privados, festivales y eventos corporativos.",
+    },
+    {
+      question: "¿Cuál es la página oficial de Pipe Cumbe?",
+      answer:
+        "La página oficial es pipecumbeoficial.com. Desde allí puedes ver biografía, videos, galería, press kit y contacto directo de booking para contratar el show vallenato.",
+    },
+    {
+      question: "¿Cuál es el contacto oficial para contratar a Pipe Cumbe?",
+      answer:
+        "El contacto oficial de booking es el WhatsApp +57 314 265 3942. Para cotizar, envía ciudad, fecha, tipo de evento y número aproximado de asistentes.",
+    },
+    {
       question: "¿Cómo contratar un cantante vallenato en Garzón, Huila?",
       answer:
         "Puedes contactar a Pipe Cumbe por WhatsApp y enviar fecha, ciudad, tipo de evento y número de asistentes. El equipo confirma disponibilidad y propuesta para shows vallenatos en Garzón, Huila y otras ciudades.",
@@ -186,6 +212,30 @@ export const site = {
       title: "Prensa y Press Kit | Pipe Cumbe Oficial",
       description:
         "Información de prensa, bio, fotos, videos y datos de booking de Pipe Cumbe para medios, empresas y organizadores.",
+    },
+    {
+      slug: "/cantante-vallenato-huila",
+      title: "Cantante Vallenato en Huila | Pipe Cumbe Oficial",
+      description:
+        "Contrata a Pipe Cumbe, cantante vallenato en Huila para ferias, fiestas, parrandas, matrimonios, eventos privados y corporativos.",
+    },
+    {
+      slug: "/cantante-vallenato-garzon",
+      title: "Cantante Vallenato en Garzón | Pipe Cumbe Oficial",
+      description:
+        "Show vallenato en vivo en Garzón, Huila con Pipe Cumbe para eventos, parrandas vallenatas, matrimonios, ferias y celebraciones.",
+    },
+    {
+      slug: "/cantante-vallenato-neiva",
+      title: "Cantante Vallenato en Neiva | Pipe Cumbe Oficial",
+      description:
+        "Pipe Cumbe ofrece show vallenato en vivo en Neiva para eventos privados, empresas, matrimonios, ferias, fiestas y festivales.",
+    },
+    {
+      slug: "/grupo-vallenato-para-eventos",
+      title: "Grupo Vallenato para Eventos | Pipe Cumbe Oficial",
+      description:
+        "Show y grupo vallenato para eventos en Colombia con Pipe Cumbe: ferias, fiestas, matrimonios, eventos corporativos y parrandas.",
     },
   ],
 

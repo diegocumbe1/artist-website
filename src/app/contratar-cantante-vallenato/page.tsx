@@ -4,7 +4,15 @@ import { BookingForm } from "@/components/BookingForm";
 import { FloatingBookingCTA } from "@/components/FloatingBookingCTA";
 import { JsonLd } from "@/components/JsonLd";
 import { site } from "@/data/site";
-import { artistJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
+import {
+  artistJsonLd,
+  bookingServiceJsonLd,
+  breadcrumbJsonLd,
+  faqJsonLd,
+  organizationJsonLd,
+  pageMetadata,
+  websiteJsonLd,
+} from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
   title: site.pages[0].title,
@@ -15,7 +23,19 @@ export const metadata: Metadata = pageMetadata({
 export default function ContratarCantanteVallenatoPage() {
   return (
     <>
-      <JsonLd data={[artistJsonLd(), faqJsonLd()]} />
+      <JsonLd
+        data={[
+          websiteJsonLd(),
+          organizationJsonLd(),
+          artistJsonLd(),
+          bookingServiceJsonLd(),
+          faqJsonLd(),
+          breadcrumbJsonLd([
+            { name: "Inicio", path: "/" },
+            { name: "Contratar cantante vallenato", path: site.pages[0].slug },
+          ]),
+        ]}
+      />
       <main className="min-h-screen bg-background text-foreground">
         <section className="relative overflow-hidden px-6 py-24 md:py-32">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_70%_10%,rgba(245,158,11,0.2),transparent_35%),radial-gradient(circle_at_10%_80%,rgba(20,184,166,0.14),transparent_40%)]" />
@@ -35,6 +55,12 @@ export default function ContratarCantanteVallenatoPage() {
                 matrimonios, eventos corporativos, parrandas privadas y
                 festivales. Solicita disponibilidad y recibe una cotización
                 directa por WhatsApp.
+              </p>
+              <p className="mt-5 max-w-2xl text-base leading-relaxed text-foreground/70">
+                Si buscas contratar a Pipe Cumbe o un show vallenato en vivo
+                para tu evento en Huila, Garzón, Neiva o cualquier ciudad de
+                Colombia, envía los datos del evento para confirmar agenda,
+                formato y logística.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 {site.cities.map((city) => (
