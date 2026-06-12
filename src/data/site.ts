@@ -12,7 +12,7 @@ export const site = {
   bookingHeadline:
     "Cantante vallenato para eventos, parrandas y festivales en Huila y Colombia",
   bookingDescription:
-    "Show vallenato en vivo para ferias y fiestas, eventos privados, matrimonios, parrandas vallenatas, festivales, conciertos y eventos corporativos.",
+    "Show y agrupación vallenata en vivo para ferias y fiestas, eventos privados, matrimonios, parrandas y parrandones vallenatos, festivales, conciertos y eventos corporativos.",
   entityDescription:
     "Andrés Felipe Cumbe, conocido artísticamente como Pipe Cumbe, es un cantante vallenato colombiano nacido en Garzón, Huila. Su propuesta de Vallenato XXI está disponible para shows en vivo, parrandas vallenatas, ferias, fiestas, matrimonios, eventos privados, festivales y eventos corporativos en Huila, Garzón, Neiva y toda Colombia.",
   keywords: [
@@ -22,7 +22,12 @@ export const site = {
     "contratar cantante vallenato",
     "artista vallenato para eventos",
     "parranda vallenata",
-    "parrando vallenato",
+    "parrandón vallenato",
+    "parrandón en garzón",
+    "parrandón vallenato huila",
+    "agrupación vallenata garzón",
+    "agrupación vallenata huila",
+    "grupo vallenato para parrandas",
     "show vallenato en vivo",
     "vallenato para matrimonios",
     "grupo vallenato huila",
@@ -39,6 +44,10 @@ export const site = {
   ],
 
   contact: {
+    // ⚠️ IMPORTANTE: si cambias este número, actualízalo también en:
+    //   - bookingWhatsapp y pressKit.whatsappMessage (abajo, en los enlaces wa.me)
+    //   - el perfil de Google Business: https://business.google.com (campo "Teléfono")
+    //   Debe coincidir en ambos lados para no afectar el SEO local ni el booking.
     bookingPhone: "3142653942",
     bookingWhatsapp:
       "https://wa.me/573142653942?text=Hola%20Pipe%2C%20me%20interesa%20contratarte%20para%20un%20evento",
