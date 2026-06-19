@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import {
   budgetTiers,
+  competitiveMoves,
   contentCalendar,
   contentPillars,
   marketingGoals,
@@ -150,6 +151,38 @@ export function MarketingModule() {
               </div>
               <p className="mt-2 text-xs leading-relaxed text-[color:var(--muted)]">{pillar.note}</p>
             </div>
+          ))}
+        </div>
+      </Panel>
+
+      {/* Cómo superar a la competencia local */}
+      <Panel title="Cómo superar a Vallenato Sin Límite">
+        <p className="mb-5 max-w-4xl text-sm leading-relaxed text-foreground/80">
+          La competencia rankea de primero porque su nombre y bio en Facebook/Instagram dicen
+          {" "}
+          <span className="text-orange-200">&quot;Garzón Huila&quot;</span> literal, y el AI Overview de Google
+          copia esas descripciones. No es que sean mejores: es que su perfil grita la ubicación. Esto se ataca así:
+        </p>
+        <div className="grid gap-3 lg:grid-cols-2">
+          {competitiveMoves.map((item) => (
+            <article key={item.move} className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="text-sm font-semibold text-white">{item.move}</h3>
+                <span
+                  className={`shrink-0 rounded-full border px-3 py-1 text-xs ${
+                    item.priority === "Alta"
+                      ? "border-orange-300/40 text-orange-200"
+                      : "border-white/15 text-foreground/60"
+                  }`}
+                >
+                  {item.priority}
+                </span>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-foreground/85">{item.action}</p>
+              <p className="mt-3 border-t border-white/5 pt-3 text-xs leading-relaxed text-[color:var(--muted)]">
+                <span className="text-orange-200">Por qué funciona:</span> {item.why}
+              </p>
+            </article>
           ))}
         </div>
       </Panel>

@@ -40,6 +40,60 @@ export const marketingGoals: {
   },
 ];
 
+// Cómo superar a "Vallenato Sin Límite" y demás grupos locales en la búsqueda y
+// en el AI Overview de Google. Aprendido de cómo ellos rankean hoy (jun 2026):
+// su nombre y bio en Facebook/Instagram incluyen "Garzón Huila" literal, y la IA
+// copia esas descripciones. Pipe Cumbe tiene una ventaja que ellos NO: web oficial.
+export const competitiveMoves: {
+  move: string;
+  action: string;
+  why: string;
+  priority: "Alta" | "Media";
+}[] = [
+  {
+    move: "Meter 'Garzón, Huila' en el nombre visible",
+    action:
+      "Cambiar el nombre de perfil (no el @) de Instagram y Facebook a: \"Pipe Cumbe | Vallenato XXI · Garzón, Huila\". Así aparece en búsquedas con ubicación.",
+    why: "El competidor gana porque su handle es @vallenatosinlimite_garzonhuila: la IA asocia su marca a Garzón al instante. Hoy @pipecumbe no dice dónde es.",
+    priority: "Alta",
+  },
+  {
+    move: "Página de Facebook activa y local",
+    action:
+      "Tener/activar la página de Facebook como 'Pipe Cumbe - Vallenato XXI Garzón, Huila' con descripción tipo \"La parranda y el parrandón vallenato de Garzón, Huila. Contrataciones: WhatsApp 3142653942\".",
+    why: "El AI Overview cita Facebook como fuente #1 y toma la descripción casi literal. El competidor usa 'La mejor parranda de Garzon Huila'. Hay que darle a Google esa misma frase pero con tu marca.",
+    priority: "Alta",
+  },
+  {
+    move: "Reclamar la frase de territorio",
+    action:
+      "Repetir en bios, posts y descripciones de YouTube: \"Vallenato XXI, la parranda de Garzón, Huila\" y \"parrandón vallenato en Garzón\". Misma frase, muchas veces.",
+    why: "La IA arma su respuesta con las frases que más se repiten en fuentes oficiales. Si tú repites 'parrandón de Garzón', te pone a ti en esa lista.",
+    priority: "Alta",
+  },
+  {
+    move: "Google Business Profile en Garzón",
+    action:
+      "Crear el perfil de empresa en Google (categoría Músico/Artista, zona Garzón–Huila, fotos, teléfono igual al de la web).",
+    why: "Aparece en Maps y en 'música en vivo Garzón'. Es una señal local fuerte que los grupos de solo-redes normalmente NO tienen: ventaja directa para Pipe.",
+    priority: "Alta",
+  },
+  {
+    move: "Usar tu ventaja: web oficial",
+    action:
+      "Enlazar pipecumbeoficial.com desde TODAS las redes (bio IG, Facebook, YouTube). Mencionar 'sitio web oficial' en los posts.",
+    why: "Pipe tiene web con datos estructurados; los grupos en solo Instagram/Facebook no. Una web oficial le da a Google una entidad más confiable y completa que la del competidor.",
+    priority: "Media",
+  },
+  {
+    move: "Ganar en volumen y prueba social",
+    action:
+      "Publicar más seguido que ellos (3 reels + historias diarias) y pedir reseñas/testimonios. Su Facebook tiene ~650 seguidores y poco engagement: es superable.",
+    why: "Google premia la cuenta más fresca y activa. Más publicaciones recientes + más interacción = la marca se ve más viva y relevante que la del competidor.",
+    priority: "Media",
+  },
+];
+
 export const contentPillars: { name: string; share: string; note: string }[] = [
   { name: "Prueba social", share: "40%", note: "Show en vivo, público, parrandas, energía real de tarima." },
   { name: "Conversión", share: "25%", note: "Habla directo a quien contrata: ferias, matrimonios, eventos." },
