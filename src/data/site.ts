@@ -27,7 +27,9 @@ export const site = {
     "parrandón vallenato huila",
     "agrupación vallenata garzón",
     "agrupación vallenata huila",
+    "grupo vallenato",
     "grupo vallenato para parrandas",
+    "grupo vallenato para eventos",
     "show vallenato en vivo",
     "vallenato para matrimonios",
     "grupo vallenato huila",
@@ -36,6 +38,14 @@ export const site = {
     "cantante vallenato bogotá",
     "vallenato para fiestas privadas",
     "shows vallenatos colombia",
+    "vallenato xxi",
+    "vallenato 21",
+    "música en vivo garzón",
+    "música en vivo huila",
+    "artistas de garzón huila",
+    "artistas del huila",
+    "cantantes de garzón huila",
+    "artistas vallenatos garzón",
   ],
 
   bio: [
@@ -245,6 +255,24 @@ export const site = {
       title: "Grupo Vallenato para Eventos | Pipe Cumbe Oficial",
       description:
         "Show y grupo vallenato para eventos en Colombia con Pipe Cumbe: ferias, fiestas, matrimonios, eventos corporativos y parrandas.",
+    },
+    {
+      slug: "/vallenato-xxi",
+      title: "Vallenato XXI | La Propuesta de Pipe Cumbe Oficial",
+      description:
+        "Vallenato XXI (Vallenato 21) es la propuesta de Pipe Cumbe: vallenato tradicional con energía moderna para parrandas, eventos y shows en vivo en Huila y Colombia.",
+    },
+    {
+      slug: "/parrandon-vallenato",
+      title: "Parrandón Vallenato en Garzón y Huila | Pipe Cumbe",
+      description:
+        "Contrata a Pipe Cumbe para un parrandón vallenato en vivo en Garzón, Huila y Colombia: parrandas, cumpleaños, matrimonios y celebraciones privadas.",
+    },
+    {
+      slug: "/artistas-garzon-huila",
+      title: "Artistas y Música en Vivo en Garzón, Huila | Pipe Cumbe",
+      description:
+        "Pipe Cumbe es uno de los artistas vallenatos de Garzón, Huila para música en vivo en ferias, fiestas, matrimonios, parrandas y eventos.",
     },
   ],
 

@@ -65,7 +65,12 @@ export function artistJsonLd() {
     "@type": ["Person", "MusicGroup"],
     "@id": absoluteUrl("/#artist"),
     name: site.artistName,
-    alternateName: [site.realName, site.legalName],
+    alternateName: [
+      site.realName,
+      site.legalName,
+      "Vallenato XXI",
+      "Vallenato 21",
+    ],
     birthName: site.realName,
     url: site.siteUrl,
     image: absoluteUrl(site.heroImage.src),
@@ -82,9 +87,12 @@ export function artistJsonLd() {
     },
     knowsAbout: [
       "cantante vallenato",
+      "Vallenato XXI",
       "parranda vallenata",
+      "parrandón vallenato",
       "show vallenato en vivo",
       "vallenato para eventos",
+      "música en vivo",
       "ferias y fiestas",
     ],
     sameAs: [

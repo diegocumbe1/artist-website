@@ -106,6 +106,109 @@ export const localSeoPages = {
       },
     ],
   },
+  vallenatoXxi: {
+    slug: "/vallenato-xxi",
+    eyebrow: "Vallenato XXI · Con todos los poderes",
+    title: "Vallenato XXI: la propuesta de Pipe Cumbe",
+    lead: "Vallenato XXI (también escrito Vallenato 21) es el sello de Pipe Cumbe: vallenato con raíz tradicional y energía de tarima moderna para parrandas, ferias, matrimonios y eventos en vivo.",
+    area: "Colombia",
+    intentKeywords: [
+      "vallenato XXI",
+      "vallenato 21",
+      "qué es el vallenato XXI",
+      "Pipe Cumbe vallenato XXI",
+    ],
+    eventExamples: [
+      "Parrandas vallenatas",
+      "Ferias y fiestas",
+      "Matrimonios y eventos privados",
+      "Conciertos y festivales",
+    ],
+    faqs: [
+      {
+        question: "¿Qué es el Vallenato XXI?",
+        answer:
+          "Vallenato XXI, también escrito Vallenato 21, es la propuesta artística de Pipe Cumbe: un vallenato que conserva la raíz y el sentimiento tradicional, pero con una energía moderna de tarima pensada para parrandas, eventos y shows en vivo.",
+      },
+      {
+        question: "¿Quién canta el Vallenato XXI?",
+        answer:
+          "El Vallenato XXI es la marca de Pipe Cumbe (Andrés Felipe Cumbe), cantante vallenato colombiano nacido en Garzón, Huila. Su canal oficial es @VALLENATOXXI en YouTube y @pipecumbe en Instagram.",
+      },
+      {
+        question: "¿Cómo contratar el show de Vallenato XXI?",
+        answer:
+          "Escribe al WhatsApp oficial con fecha, ciudad, tipo de evento y número de asistentes para recibir disponibilidad y propuesta del show Vallenato XXI en vivo.",
+      },
+    ],
+  },
+  parrandon: {
+    slug: "/parrandon-vallenato",
+    eyebrow: "Parrandón vallenato",
+    title: "Parrandón vallenato en vivo con Pipe Cumbe",
+    lead: "Pipe Cumbe lleva el parrandón vallenato a tu celebración: parranda, sentimiento y energía en vivo para cumpleaños, matrimonios, fiestas y reuniones privadas en Garzón, Huila y Colombia.",
+    area: "Garzón, Huila",
+    intentKeywords: [
+      "parrandón vallenato",
+      "parrandón en Garzón",
+      "parrandón vallenato Huila",
+      "contratar parrandón vallenato",
+    ],
+    eventExamples: [
+      "Parrandas y parrandones privados",
+      "Cumpleaños y aniversarios",
+      "Matrimonios y despedidas",
+      "Reuniones familiares y empresariales",
+    ],
+    faqs: [
+      {
+        question: "¿Pipe Cumbe hace parrandones vallenatos privados?",
+        answer:
+          "Sí. Pipe Cumbe realiza parrandones y parrandas vallenatas en vivo para cumpleaños, matrimonios, fiestas, despedidas y reuniones privadas en Garzón, Huila y otras ciudades de Colombia.",
+      },
+      {
+        question: "¿Cuánto dura un parrandón vallenato?",
+        answer:
+          "La duración se coordina según el evento. Al cotizar por WhatsApp puedes indicar el horario y las horas de show que deseas, y el equipo confirma el formato del parrandón.",
+      },
+      {
+        question: "¿Cómo reservar un parrandón vallenato?",
+        answer:
+          "Envía por WhatsApp la fecha, ciudad, lugar y número de asistentes. Con esa información se confirma disponibilidad, propuesta y reserva del parrandón vallenato.",
+      },
+    ],
+  },
+  artistasGarzon: {
+    slug: "/artistas-garzon-huila",
+    eyebrow: "Artistas y música en vivo en el Huila",
+    title: "Artistas y música en vivo en Garzón, Huila",
+    lead: "¿Buscas artistas o música en vivo en Garzón, Huila? Pipe Cumbe es un artista vallenato de Garzón con show en vivo para ferias, fiestas, matrimonios, parrandas y eventos en todo el Huila.",
+    area: "Garzón, Huila",
+    intentKeywords: [
+      "artistas de Garzón Huila",
+      "música en vivo en Garzón",
+      "artistas del Huila",
+      "cantantes de Garzón Huila",
+    ],
+    eventExamples: [
+      "Ferias y fiestas municipales",
+      "Música en vivo para eventos privados",
+      "Matrimonios y celebraciones",
+      "Tarimas y festivales del Huila",
+    ],
+    faqs: [
+      {
+        question: "¿Qué artistas hay para música en vivo en Garzón, Huila?",
+        answer:
+          "Pipe Cumbe es uno de los artistas vallenatos originarios de Garzón, Huila, con propuesta de música en vivo (Vallenato XXI) para ferias, fiestas, matrimonios, parrandas y eventos privados y corporativos.",
+      },
+      {
+        question: "¿Cómo contratar música en vivo en el Huila?",
+        answer:
+          "Escribe al WhatsApp oficial de Pipe Cumbe indicando fecha, ciudad, tipo de evento y número de asistentes para recibir disponibilidad y propuesta de show en vivo en el Huila.",
+      },
+    ],
+  },
   eventos: {
     slug: "/grupo-vallenato-para-eventos",
     eyebrow: "Shows para eventos",

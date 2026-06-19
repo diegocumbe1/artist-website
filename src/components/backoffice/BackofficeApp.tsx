@@ -49,6 +49,7 @@ import {
 } from "./ui";
 import { FinanceModule } from "./FinanceModule";
 import { CRMModule } from "./CRMModule";
+import { MarketingModule } from "./MarketingModule";
 import { PayrollPanel, RosterEntry, buildRoster, rosterTotal } from "./Payroll";
 
 type Tab =
@@ -56,6 +57,7 @@ type Tab =
   | "calendar"
   | "events"
   | "crm"
+  | "marketing"
   | "finance"
   | "calculator"
   | "variables"
@@ -71,6 +73,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "calendar", label: "Calendario" },
   { id: "crm", label: "Leads / CRM" },
   { id: "events", label: "Contrataciones" },
+  { id: "marketing", label: "Promoción" },
   { id: "finance", label: "Finanzas" },
   { id: "calculator", label: "Calculadora" },
   { id: "variables", label: "Variables" },
@@ -79,7 +82,7 @@ const tabs: { id: Tab; label: string }[] = [
 ];
 
 // Booking gestiona pipeline comercial: CRM, calendario y contrataciones.
-const bookingTabs = new Set<Tab>(["dashboard", "calendar", "crm", "events"]);
+const bookingTabs = new Set<Tab>(["dashboard", "calendar", "crm", "events", "marketing"]);
 
 function tabsForRole(role: BackofficeAccount["role"]): { id: Tab; label: string }[] {
   if (role === "Booking") return tabs.filter((tab) => bookingTabs.has(tab.id));
@@ -374,6 +377,7 @@ export function BackofficeApp() {
         {activeTab === "calendar" && <CalendarView events={data.events} />}
         {activeTab === "events" && <EventsManager data={data} setData={setData} />}
         {activeTab === "crm" && <CRMModule data={data} setData={setData} />}
+        {activeTab === "marketing" && <MarketingModule />}
         {activeTab === "finance" && <FinanceModule data={data} setData={setData} />}
         {activeTab === "calculator" && <Calculator data={data} setData={setData} />}
         {activeTab === "variables" && <SettingsModule data={data} setData={setData} />}
