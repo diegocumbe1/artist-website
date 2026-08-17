@@ -217,10 +217,13 @@ export function videosJsonLd() {
     "@context": "https://schema.org",
     "@type": "VideoObject",
     name: `${video.title} - ${site.artistName}`,
-    description: `Video oficial de ${site.artistName}: ${video.title}.`,
+    description:
+      video.description ?? `Video oficial de ${site.artistName}: ${video.title}.`,
     thumbnailUrl: `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`,
     uploadDate: video.uploadDate,
     embedUrl: `https://www.youtube.com/embed/${video.youtubeId}`,
+    contentUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,
+    url: absoluteUrl("/videos"),
   }));
 }
 

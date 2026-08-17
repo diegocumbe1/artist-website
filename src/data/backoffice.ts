@@ -1,3 +1,5 @@
+import type { TariffConfig } from "@/components/backoffice/finance";
+
 export enum BackofficeUser {
   Manager = "manager",
   Admin = "admin",
@@ -36,6 +38,8 @@ export type ManagedEvent = {
   reinvestPct: number;
   contingencyPct: number;
   notes: string;
+  startTime?: string; // hora de inicio "HH:MM" (para calendario y Google Calendar)
+  durationHours?: number; // duración del show en horas
   // Opcionales: preparan la conversión lead → contratación desde el cotizador.
   format?: string; // ShowFormatKey
   coverage?: string; // ShowScope
@@ -251,6 +255,7 @@ export type BackofficeData = {
   settings: FinanceSettings;
   leads: Lead[];
   quotes: QuoteRecord[];
+  tariffs: TariffConfig;
 };
 
 export const backofficeAccounts: BackofficeAccount[] = [

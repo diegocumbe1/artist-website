@@ -46,6 +46,10 @@ export const site = {
     "artistas del huila",
     "cantantes de garzón huila",
     "artistas vallenatos garzón",
+    "decídete pipe cumbe",
+    "pipe cumbe y pipe tello",
+    "canciones de pipe cumbe",
+    "videos de pipe cumbe",
   ],
 
   bio: [
@@ -86,10 +90,17 @@ export const site = {
   },
 
   videos: [
-    { youtubeId: "b4Va4Zohs9Q", title: "La Fuga", uploadDate: "2024-01-15" },
-    { youtubeId: "XvXnaZfjbOo", title: "Quiero Que Seas Mi Estrella (Live)", uploadDate: "2024-03-20" },
-    { youtubeId: "pfQeG5PEut4", title: "Parranda, Ron y Mujer (Live)", uploadDate: "2024-06-10" },
-  ],
+    {
+      youtubeId: "NsPBZmiuxOI",
+      title: "Decídete",
+      uploadDate: "2026-08-15",
+      description:
+        "Decídete, el nuevo tema de Pipe Cumbe junto a Pipe Tello: vallenato XXI con sabor de parranda, estreno oficial del canal Vallenato XXI.",
+    },
+    { youtubeId: "b4Va4Zohs9Q", title: "La Fuga", uploadDate: "2023-11-03" },
+    { youtubeId: "XvXnaZfjbOo", title: "Quiero Que Seas Mi Estrella (Live)", uploadDate: "2024-08-31" },
+    { youtubeId: "pfQeG5PEut4", title: "Parranda, Ron y Mujer (Live)", uploadDate: "2024-09-26" },
+  ] as VideoItem[],
 
   stats: [
     { value: "+50", label: "Presentaciones" },
@@ -154,6 +165,11 @@ export const site = {
         "La página oficial es pipecumbeoficial.com. Desde allí puedes ver biografía, videos, galería, press kit y contacto directo de booking para contratar el show vallenato.",
     },
     {
+      question: "¿Cuál es la canción más reciente de Pipe Cumbe?",
+      answer:
+        "El lanzamiento más reciente es «Decídete», junto a Pipe Tello, publicado en el canal de YouTube Vallenato XXI. Puedes verlo en la sección de videos de pipecumbeoficial.com.",
+    },
+    {
       question: "¿Cuál es el contacto oficial para contratar a Pipe Cumbe?",
       answer:
         "El contacto oficial de booking es el WhatsApp +57 314 265 3942. Para cotizar, envía ciudad, fecha, tipo de evento y número aproximado de asistentes.",
@@ -216,9 +232,9 @@ export const site = {
     },
     {
       slug: "/videos",
-      title: "Videos de Pipe Cumbe | Vallenato en Vivo",
+      title: "Videos de Pipe Cumbe | Decídete y Vallenato en Vivo",
       description:
-        "Videos musicales y presentaciones en vivo de Pipe Cumbe, artista colombiano de vallenato.",
+        "Videos musicales y presentaciones en vivo de Pipe Cumbe, artista colombiano de vallenato. Mira y el resto del repertorio de Vallenato XXI.",
     },
     {
       slug: "/biografia",
@@ -285,6 +301,13 @@ export const site = {
     { src: "/gallery/g7.webp", alt: "Pipe Cumbe con agrupación vallenata en presentación musical", width: 1499, height: 2000 },
     { src: "/gallery/g1.webp", alt: "Pipe Cumbe y su banda en show vallenato en vivo", width: 2000, height: 1635, featured: true },
   ] as GalleryItem[],
+};
+
+export type VideoItem = {
+  youtubeId: string;
+  title: string;
+  uploadDate: string;
+  description?: string;
 };
 
 export type GalleryItem = {

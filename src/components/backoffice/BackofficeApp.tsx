@@ -24,17 +24,22 @@ import {
 import {
   ShowFormatKey,
   ShowScope,
+  TariffConfig,
+  committedStatuses,
   computePricing,
+  defaultTariffs,
+  eventExecutedCost,
+  eventPlannedCost,
   eventProfit,
   eventTypeKeys,
   eventTypeProfiles,
   financialStatus,
+  mergeTariffs,
   musiciansBaseFromSettings,
   operationCostFromSettings,
   scopeKeys,
   scopeProfiles,
   showFormatKeys,
-  showFormats,
 } from "./finance";
 import {
   EmptyState,
@@ -60,6 +65,7 @@ type Tab =
   | "marketing"
   | "finance"
   | "calculator"
+  | "tariffs"
   | "variables"
   | "team"
   | "costs";
@@ -76,6 +82,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "marketing", label: "Promoción" },
   { id: "finance", label: "Finanzas" },
   { id: "calculator", label: "Calculadora" },
+  { id: "tariffs", label: "Tarifas" },
   { id: "variables", label: "Variables" },
   { id: "team", label: "Equipo" },
   { id: "costs", label: "Costos" },
@@ -268,6 +275,7 @@ function getInitialData(): StoredData {
     settings: defaultSettings,
     leads: defaultLeads,
     quotes: defaultQuotes,
+    tariffs: defaultTariffs,
   };
 }
 
@@ -290,6 +298,7 @@ export function BackofficeApp() {
         ...parsed,
         goals: { ...defaultGoals, ...(parsed.goals ?? {}) },
         settings: { ...defaultSettings, ...(parsed.settings ?? {}) },
+        tariffs: mergeTariffs(parsed.tariffs),
       });
     }
 
@@ -374,12 +383,13 @@ export function BackofficeApp() {
         </nav>
 
         {activeTab === "dashboard" && <Dashboard data={data} />}
-        {activeTab === "calendar" && <CalendarView events={data.events} />}
+        {activeTab === "calendar" && <CalendarView data={data} setData={setData} />}
         {activeTab === "events" && <EventsManager data={data} setData={setData} />}
         {activeTab === "crm" && <CRMModule data={data} setData={setData} />}
         {activeTab === "marketing" && <MarketingModule />}
         {activeTab === "finance" && <FinanceModule data={data} setData={setData} />}
         {activeTab === "calculator" && <Calculator data={data} setData={setData} />}
+        {activeTab === "tariffs" && <TariffsModule data={data} setData={setData} />}
         {activeTab === "variables" && <SettingsModule data={data} setData={setData} />}
         {activeTab === "team" && <TeamManager data={data} setData={setData} />}
         {activeTab === "costs" && <CostsManager data={data} setData={setData} />}
@@ -514,39 +524,231 @@ function Dashboard({ data }: { data: StoredData }) {
   );
 }
 
-function CalendarView({ events }: { events: ManagedEvent[] }) {
-  const grouped = events.reduce<Record<string, ManagedEvent[]>>((acc, event) => {
-    const month = event.date.slice(0, 7) || "Sin fecha";
-    acc[month] = [...(acc[month] || []), event];
-    return acc;
-  }, {});
+const weekdayLabels = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const monthNames = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+];
+
+function isoDay(year: number, month: number, day: number) {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+/** Link "Agregar a Google Calendar" prellenado (sin OAuth, abre en el navegador). */
+function googleCalendarUrl(event: ManagedEvent) {
+  const dayCompact = (d: Date) =>
+    `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+  let dates: string;
+  if (event.startTime) {
+    const durMs = (event.durationHours && event.durationHours > 0 ? event.durationHours : 3) * 3600000;
+    const startDate = new Date(`${event.date}T${event.startTime}:00`);
+    const endDate = new Date(startDate.getTime() + durMs);
+    const fmt = (d: Date) =>
+      `${dayCompact(d)}T${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}00`;
+    dates = `${fmt(startDate)}/${fmt(endDate)}`;
+  } else {
+    // Evento de día completo: Google exige fecha fin = día siguiente.
+    const next = new Date(`${event.date}T00:00:00`);
+    next.setDate(next.getDate() + 1);
+    dates = `${event.date.replace(/-/g, "")}/${dayCompact(next)}`;
+  }
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: `${event.type} · ${event.client || "Pipe Cumbe"}`,
+    dates,
+    details: `Valor: ${currency.format(event.value)}\nEstado: ${event.status}\n${event.notes ?? ""}`,
+    location: event.city ?? "",
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function CalendarView({
+  data,
+  setData,
+}: {
+  data: StoredData;
+  setData: (updater: (current: StoredData) => StoredData) => void;
+}) {
+  const today = new Date();
+  const [cursor, setCursor] = useState({ year: today.getFullYear(), month: today.getMonth() });
+  const [selected, setSelected] = useState<string>(isoDay(today.getFullYear(), today.getMonth(), today.getDate()));
+
+  const eventsByDay = useMemo(() => {
+    const map = new Map<string, ManagedEvent[]>();
+    for (const event of data.events) {
+      if (!event.date) continue;
+      map.set(event.date, [...(map.get(event.date) ?? []), event]);
+    }
+    return map;
+  }, [data.events]);
+
+  const firstOfMonth = new Date(cursor.year, cursor.month, 1);
+  const startOffset = (firstOfMonth.getDay() + 6) % 7; // lunes = 0
+  const daysInMonth = new Date(cursor.year, cursor.month + 1, 0).getDate();
+  const cells: (number | null)[] = [
+    ...Array.from({ length: startOffset }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const monthEvents = data.events
+    .filter((event) => event.date.startsWith(`${cursor.year}-${String(cursor.month + 1).padStart(2, "0")}`))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const selectedEvents = eventsByDay.get(selected) ?? [];
+  const busyCount = new Set(monthEvents.map((event) => event.date)).size;
+
+  function shiftMonth(delta: number) {
+    setCursor((current) => {
+      const next = new Date(current.year, current.month + delta, 1);
+      return { year: next.getFullYear(), month: next.getMonth() };
+    });
+  }
 
   return (
-    <Panel title="Calendario de eventos">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {Object.entries(grouped).map(([month, items]) => (
-          <article key={month} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-            <h2 className="font-impact text-3xl tracking-wide">{month}</h2>
-            <div className="mt-4 space-y-3">
-              {items
-                .sort((a, b) => a.date.localeCompare(b.date))
-                .map((event) => (
-                  <div key={event.id} className="rounded-md border border-white/10 bg-white/[0.025] p-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="font-semibold">{event.date}</p>
-                      <StatusBadge status={event.status} />
-                    </div>
-                    <p className="mt-2 text-sm">{event.client}</p>
-                    <p className="text-xs text-[color:var(--muted)]">
-                      {event.city} · {currency.format(event.value)}
-                    </p>
+    <section className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+      <Panel
+        title={`${monthNames[cursor.month]} ${cursor.year}`}
+        action={
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => shiftMonth(-1)} className="h-9 w-9 rounded-full border border-white/10 hover:border-orange-300/40" aria-label="Mes anterior">‹</button>
+            <button type="button" onClick={() => { setCursor({ year: today.getFullYear(), month: today.getMonth() }); }} className="rounded-full border border-white/10 px-3 py-1 text-xs hover:border-orange-300/40">Hoy</button>
+            <button type="button" onClick={() => shiftMonth(1)} className="h-9 w-9 rounded-full border border-white/10 hover:border-orange-300/40" aria-label="Mes siguiente">›</button>
+          </div>
+        }
+      >
+        <p className="mb-4 text-xs text-[color:var(--muted)]">
+          {busyCount} día(s) ocupado(s) · {daysInMonth - busyCount} libre(s). Clic en un día para ver o agregar.
+        </p>
+        <div className="grid grid-cols-7 gap-1.5 text-center text-[11px] uppercase tracking-[0.1em] text-[color:var(--muted)]">
+          {weekdayLabels.map((label) => (
+            <div key={label} className="py-1">{label}</div>
+          ))}
+        </div>
+        <div className="mt-1 grid grid-cols-7 gap-1.5">
+          {cells.map((day, index) => {
+            if (day === null) return <div key={index} />;
+            const iso = isoDay(cursor.year, cursor.month, day);
+            const dayEvents = eventsByDay.get(iso) ?? [];
+            const busy = dayEvents.length > 0;
+            const isSelected = iso === selected;
+            const isToday = iso === isoDay(today.getFullYear(), today.getMonth(), today.getDate());
+            return (
+              <button
+                key={iso}
+                type="button"
+                onClick={() => setSelected(iso)}
+                className={`flex aspect-square flex-col items-center justify-center gap-1 rounded-md border p-1 text-sm transition-colors ${
+                  isSelected
+                    ? "border-orange-300/70 bg-orange-400/15"
+                    : busy
+                      ? "border-orange-300/30 bg-orange-400/[0.06] hover:bg-orange-400/10"
+                      : "border-white/10 bg-white/[0.02] hover:border-orange-300/30 hover:bg-white/[0.05]"
+                } ${isToday ? "ring-1 ring-emerald-400/50" : ""}`}
+              >
+                <span className={busy ? "font-semibold text-orange-100" : "text-foreground/80"}>{day}</span>
+                {busy && (
+                  <span className="flex gap-0.5">
+                    {dayEvents.slice(0, 3).map((event) => (
+                      <span key={event.id} className="h-1.5 w-1.5 rounded-full bg-orange-400" />
+                    ))}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-4 flex flex-wrap gap-4 text-xs text-[color:var(--muted)]">
+          <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-orange-400" /> Ocupado</span>
+          <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full border border-white/20" /> Libre</span>
+          <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full ring-1 ring-emerald-400/50" /> Hoy</span>
+        </div>
+      </Panel>
+
+      <div className="grid gap-5">
+        <Panel title={`Día ${selected}`}>
+          {selectedEvents.length === 0 ? (
+            <p className="mb-4 rounded-md border border-dashed border-emerald-400/25 bg-emerald-500/[0.04] p-4 text-sm text-emerald-200">
+              ✅ Fecha libre. Agrega un evento abajo.
+            </p>
+          ) : (
+            <div className="mb-4 space-y-2">
+              {selectedEvents.map((event) => (
+                <div key={event.id} className="rounded-md border border-white/10 bg-white/[0.025] p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-semibold">{event.client || "Sin cliente"}</p>
+                    <StatusBadge status={event.status} />
                   </div>
-                ))}
+                  <p className="mt-1 text-xs text-[color:var(--muted)]">
+                    {event.startTime ? `${event.startTime} · ` : ""}
+                    {event.type} · {event.city || "s/ciudad"} · {currency.format(event.value)}
+                    {event.durationHours ? ` · ${event.durationHours}h` : ""}
+                  </p>
+                  <a
+                    href={googleCalendarUrl(event)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-foreground/80 transition-colors hover:border-orange-300/40 hover:text-white"
+                  >
+                    📅 Agregar a Google Calendar
+                  </a>
+                </div>
+              ))}
             </div>
-          </article>
-        ))}
+          )}
+          <QuickEventForm date={selected} setData={setData} />
+        </Panel>
       </div>
-    </Panel>
+    </section>
+  );
+}
+
+function QuickEventForm({
+  date,
+  setData,
+}: {
+  date: string;
+  setData: (updater: (current: StoredData) => StoredData) => void;
+}) {
+  const [client, setClient] = useState("");
+  const [city, setCity] = useState("");
+  const [type, setType] = useState(eventTypes[0]);
+  const [startTime, setStartTime] = useState("");
+  const [durationHours, setDurationHours] = useState(3);
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!client.trim()) return;
+    const base = draftForType(type);
+    setData((current) => ({
+      ...current,
+      events: [
+        { ...base, id: createId("evt"), date, client, city, startTime, durationHours },
+        ...current.events,
+      ],
+    }));
+    setClient("");
+    setCity("");
+    setStartTime("");
+  }
+
+  return (
+    <form onSubmit={submit} className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.02] p-3">
+      <p className="text-xs uppercase tracking-[0.14em] text-orange-100/60">Agregar evento el {date}</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Cliente" value={client} onChange={setClient} />
+        <Field label="Ciudad" value={city} onChange={setCity} />
+        <SelectField label="Tipo" value={type} options={eventTypes} onChange={setType} />
+        <Field label="Hora inicio" type="time" value={startTime} onChange={setStartTime} />
+        <Field label="Duración (horas)" type="number" value={String(durationHours)} onChange={(value) => setDurationHours(Number(value) || 0)} />
+      </div>
+      <button type="submit" className="brand-gradient h-11 rounded-md font-semibold text-white shadow-[0_0_40px_rgba(245,158,11,0.18)] transition-all hover:opacity-90">
+        Agregar al calendario
+      </button>
+      <p className="text-xs text-[color:var(--muted)]">
+        Se crea con precio sugerido del tipo de evento. Ajústalo luego en Contrataciones.
+      </p>
+    </form>
   );
 }
 
@@ -629,6 +831,8 @@ function EventsManager({
               <Field label="Ciudad" value={draft.city} onChange={(value) => setDraft({ ...draft, city: value })} />
               <SelectField label="Tipo" value={draft.type} options={eventTypes} onChange={applyType} />
               <SelectField label="Estado" value={draft.status} options={statuses} onChange={(value) => setDraft({ ...draft, status: value as EventStatus })} />
+              <Field label="Hora inicio" type="time" value={draft.startTime ?? ""} onChange={(value) => setDraft({ ...draft, startTime: value })} />
+              <Field label="Duración (horas)" type="number" value={String(draft.durationHours ?? "")} onChange={(value) => setDraft({ ...draft, durationHours: Number(value) || undefined })} />
               <CurrencyField label="Valor cobrado" value={draft.value} onChange={(value) => {
                 setPriceMode("manual");
                 setDraft({ ...draft, value });
@@ -680,10 +884,69 @@ function EventsManager({
           </button>
         </form>
       </Panel>
-      <Panel title="Control de eventos reales">
-        <EventTable events={data.events} />
-      </Panel>
+      <div className="grid gap-5">
+        <Panel title="Control de eventos reales">
+          <EventTable events={data.events} />
+        </Panel>
+        <PlanVsRealPanel data={data} />
+      </div>
     </section>
+  );
+}
+
+function PlanVsRealPanel({ data }: { data: StoredData }) {
+  const rows = useMemo(() => {
+    return data.events
+      .filter((event) => event.date)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .map((event) => {
+        const planned = eventPlannedCost(event);
+        const executed = eventExecutedCost(event.id, data.expenses);
+        return { event, planned, executed, variance: executed - planned };
+      })
+      .filter((row) => row.executed > 0 || committedStatuses.has(row.event.status) || row.event.status === "Realizado")
+      .slice(0, 12);
+  }, [data.events, data.expenses]);
+
+  return (
+    <Panel title="Plan vs. real por evento">
+      <p className="mb-4 text-sm text-[color:var(--muted)]">
+        Costo presupuestado vs. lo realmente ejecutado (egresos ligados al evento en Finanzas).
+      </p>
+      {rows.length === 0 ? (
+        <EmptyState text="Liga egresos a un evento en Finanzas para ver aquí el costo real ejecutado." />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] border-separate border-spacing-0 text-left text-sm">
+            <thead className="text-xs uppercase tracking-[0.16em] text-orange-100/60">
+              <tr className="border-b border-white/10 bg-white/[0.025]">
+                <th className="py-3">Evento</th>
+                <th>Presupuestado</th>
+                <th>Ejecutado</th>
+                <th>Diferencia</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ event, planned, executed, variance }) => (
+                <tr key={event.id} className="border-b border-white/10">
+                  <td className="py-3">
+                    <p className="font-medium">{event.client || "Sin cliente"}</p>
+                    <p className="text-xs text-[color:var(--muted)]">{event.date} · {event.type}</p>
+                  </td>
+                  <td>{currency.format(planned)}</td>
+                  <td className={executed > 0 ? "text-orange-200" : "text-[color:var(--muted)]"}>
+                    {executed > 0 ? currency.format(executed) : "—"}
+                  </td>
+                  <td className={variance > 0 ? "text-red-300" : "text-emerald-300"}>
+                    {executed > 0 ? `${variance > 0 ? "+" : ""}${currency.format(variance)}` : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Panel>
   );
 }
 
@@ -816,6 +1079,146 @@ function QuoteLine({
   );
 }
 
+function TariffsModule({
+  data,
+  setData,
+}: {
+  data: StoredData;
+  setData: (updater: (current: StoredData) => StoredData) => void;
+}) {
+  const tariffs = data.tariffs ?? defaultTariffs;
+
+  function updateFormat(key: ShowFormatKey, patch: Partial<TariffConfig["formats"][ShowFormatKey]>) {
+    setData((current) => {
+      const base = current.tariffs ?? defaultTariffs;
+      return {
+        ...current,
+        tariffs: {
+          ...base,
+          formats: { ...base.formats, [key]: { ...base.formats[key], ...patch } },
+        },
+      };
+    });
+  }
+
+  function updateEventType(key: string, patch: Partial<TariffConfig["eventTypes"][string]>) {
+    setData((current) => {
+      const base = current.tariffs ?? defaultTariffs;
+      return {
+        ...current,
+        tariffs: {
+          ...base,
+          eventTypes: { ...base.eventTypes, [key]: { ...base.eventTypes[key], ...patch } },
+        },
+      };
+    });
+  }
+
+  function updateHours(patch: Partial<Pick<TariffConfig, "includedHours" | "extraHourSurcharge">>) {
+    setData((current) => ({
+      ...current,
+      tariffs: { ...(current.tariffs ?? defaultTariffs), ...patch },
+    }));
+  }
+
+  function reset() {
+    setData((current) => ({ ...current, tariffs: defaultTariffs }));
+  }
+
+  return (
+    <section className="grid gap-5">
+      <Panel
+        title="Reglas de horas"
+        action={
+          <button type="button" onClick={reset} className="rounded-full border border-white/15 px-3 py-1 text-xs hover:border-orange-300/40">
+            Restaurar tarifas
+          </button>
+        }
+      >
+        <p className="mb-4 text-sm text-[color:var(--muted)]">
+          El precio de show incluye estas horas. Cada hora adicional suma el recargo sobre el precio, y la calculadora muestra la tarifa/hora implícita.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:max-w-xl">
+          <Field label="Horas incluidas en el show" type="number" value={String(tariffs.includedHours)} onChange={(value) => updateHours({ includedHours: Math.max(1, Number(value) || 1) })} />
+          <CurrencyField label="Recargo por hora extra" value={tariffs.extraHourSurcharge} onChange={(value) => updateHours({ extraHourSurcharge: value })} />
+        </div>
+      </Panel>
+
+      <Panel title="Tarifas por formato de show">
+        <p className="mb-5 text-sm text-[color:var(--muted)]">
+          Define la estructura de costos de cada formato. Estos valores alimentan la calculadora y las contrataciones.
+        </p>
+        <div className="grid gap-4 xl:grid-cols-2">
+          {showFormatKeys.map((key) => {
+            const format = tariffs.formats[key];
+            return (
+              <article key={key} className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h3 className="font-semibold text-foreground">{format.label}</h3>
+                  <span className="text-xs text-[color:var(--muted)]">{format.productionLevel}</span>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Músicos (sin cantante)" type="number" value={String(format.musiciansCount)} onChange={(value) => updateFormat(key, { musiciansCount: Number(value) || 0 })} />
+                  <Field label="Personas que viajan" type="number" value={String(format.teamSize)} onChange={(value) => updateFormat(key, { teamSize: Number(value) || 0 })} />
+                  <CurrencyField label="Pago por músico" value={format.baseMusiciansPay} onChange={(value) => updateFormat(key, { baseMusiciansPay: value })} />
+                  <CurrencyField label="Pago cantante" value={format.singerPay} onChange={(value) => updateFormat(key, { singerPay: value })} />
+                  <CurrencyField label="Transporte local" value={format.transportLocal} onChange={(value) => updateFormat(key, { transportLocal: value })} />
+                  <CurrencyField label="Transporte foráneo" value={format.transportForaneo} onChange={(value) => updateFormat(key, { transportForaneo: value })} />
+                  <CurrencyField label="Logística / sonido" value={format.logistics} onChange={(value) => updateFormat(key, { logistics: value })} />
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </Panel>
+
+      <Panel title="Márgenes por tipo de evento">
+        <p className="mb-5 text-sm text-[color:var(--muted)]">
+          El tipo de evento no cambia los músicos: ajusta el margen objetivo y la exigencia logística.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px] border-separate border-spacing-0 text-left text-sm">
+            <thead className="text-xs uppercase tracking-[0.16em] text-orange-100/60">
+              <tr className="border-b border-white/10 bg-white/[0.025]">
+                <th className="py-3">Tipo de evento</th>
+                <th>% Utilidad objetivo</th>
+                <th>Factor logística</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(tariffs.eventTypes).map((key) => {
+                const profile = tariffs.eventTypes[key];
+                return (
+                  <tr key={key} className="border-b border-white/10">
+                    <td className="py-2">{profile.label}</td>
+                    <td className="py-2">
+                      <input
+                        type="number"
+                        value={Math.round(profile.targetProfitPct * 100)}
+                        onChange={(event) => updateEventType(key, { targetProfitPct: Number(event.target.value) / 100 })}
+                        className="h-9 w-24 rounded-md border border-white/10 bg-white/[0.035] px-2 text-sm outline-none focus:border-orange-300/70"
+                      />
+                    </td>
+                    <td className="py-2">
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={profile.logisticsFactor}
+                        onChange={(event) => updateEventType(key, { logisticsFactor: Number(event.target.value) || 1 })}
+                        className="h-9 w-24 rounded-md border border-white/10 bg-white/[0.035] px-2 text-sm outline-none focus:border-orange-300/70"
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+    </section>
+  );
+}
+
 function SettingsModule({
   data,
   setData,
@@ -944,10 +1347,12 @@ function Calculator({
   setData: (updater: (current: StoredData) => StoredData) => void;
 }) {
   const settings = data.settings ?? defaultSettings;
+  const tariffs = data.tariffs ?? defaultTariffs;
 
   const [formatKey, setFormatKey] = useState<ShowFormatKey>("medio");
   const [eventType, setEventType] = useState(eventTypeKeys[0]);
   const [scope, setScope] = useState<ShowScope>("local");
+  const [durationHours, setDurationHours] = useState(tariffs.includedHours);
   const [targetPct, setTargetPct] = useState(
     Math.round(eventTypeProfiles[eventTypeKeys[0]].targetProfitPct * 100),
   );
@@ -977,13 +1382,15 @@ function Calculator({
         eventType,
         scope,
         settings,
+        tariffs,
+        durationHours,
         targetProfitPct: targetPct / 100,
         managerPct: managerPct / 100,
         reinvestPct: reinvestPct / 100,
         contingencyPct: contingencyPct / 100,
         musiciansPayOverride: musiciansPay,
       }),
-    [formatKey, eventType, scope, settings, targetPct, managerPct, reinvestPct, contingencyPct, musiciansPay],
+    [formatKey, eventType, scope, settings, tariffs, durationHours, targetPct, managerPct, reinvestPct, contingencyPct, musiciansPay],
   );
 
   function saveQuote() {
@@ -1035,7 +1442,7 @@ function Calculator({
 
   function changeEventType(next: string) {
     setEventType(next);
-    const profile = eventTypeProfiles[next] ?? eventTypeProfiles[eventTypeKeys[0]];
+    const profile = tariffs.eventTypes[next] ?? eventTypeProfiles[eventTypeKeys[0]];
     setTargetPct(Math.round(profile.targetProfitPct * 100));
   }
 
@@ -1068,7 +1475,7 @@ function Calculator({
         </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {showFormatKeys.map((key) => {
-            const format = showFormats[key];
+            const format = tariffs.formats[key];
             const active = key === formatKey;
             return (
               <button
@@ -1114,6 +1521,29 @@ function Calculator({
         <p className="mt-2 text-xs text-[color:var(--muted)]">
           {result.eventProfile.perception} · {result.scopeProfile.note}
         </p>
+
+        {/* Duración del show y tarifa/hora */}
+        <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.02] p-3">
+          <div className="flex items-end justify-between gap-3">
+            <div className="w-40">
+              <Field
+                label={`Duración (incluye ${tariffs.includedHours}h)`}
+                type="number"
+                value={String(durationHours)}
+                onChange={(next) => setDurationHours(Math.max(1, Number(next) || 0))}
+              />
+            </div>
+            <div className="text-right">
+              <p className="text-xs uppercase tracking-[0.14em] text-[color:var(--muted)]">Tarifa/hora implícita</p>
+              <p className="font-impact text-2xl tracking-wide brand-text-gradient">{currency.format(result.impliedHourlyRate)}</p>
+            </div>
+          </div>
+          {result.extraHours > 0 && (
+            <p className="mt-2 text-xs text-orange-200">
+              +{result.extraHours}h extra × {currency.format(tariffs.extraHourSurcharge)} = {currency.format(result.extraHourCost)} sobre el precio de show.
+            </p>
+          )}
+        </div>
 
         {/* Nómina dinámica */}
         <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.015] p-3">

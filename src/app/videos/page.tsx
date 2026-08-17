@@ -29,7 +29,9 @@ export default function VideosPage() {
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-relaxed text-[color:var(--muted)]">
             Mira el sonido, la energía y la puesta en escena de Pipe Cumbe en
-            sus videos destacados.
+            sus videos destacados, empezando por el estreno{" "}
+            <strong className="text-foreground">Decídete</strong> junto a Pipe
+            Tello.
           </p>
           <div className="mt-12">
             <VideoCarousel />

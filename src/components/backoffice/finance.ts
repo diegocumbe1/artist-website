@@ -62,6 +62,23 @@ export function eventProfit(event: ManagedEvent) {
   );
 }
 
+/** Costo directo presupuestado del evento (operación + cantante + músicos). */
+export function eventPlannedCost(event: ManagedEvent) {
+  return event.operationCosts + eventSingerPay(event) + eventMusiciansPay(event);
+}
+
+/** Costo real ejecutado: suma de egresos registrados y ligados a este evento. */
+export function eventExecutedCost(eventId: string, expenses: Expense[]) {
+  return expenses
+    .filter((expense) => expense.eventId === eventId)
+    .reduce((sum, expense) => sum + expense.amount, 0);
+}
+
+/** Utilidad real = lo cobrado (pagos) − lo ejecutado (egresos ligados). */
+export function eventRealProfit(event: ManagedEvent, payments: Payment[], expenses: Expense[]) {
+  return eventPaid(event.id, payments) - eventExecutedCost(event.id, expenses);
+}
+
 export function eventPaid(eventId: string, payments: Payment[]) {
   return payments
     .filter((payment) => payment.eventId === eventId)
@@ -227,6 +244,42 @@ export const eventTypeProfiles: Record<string, EventTypeProfile> = {
 
 export const eventTypeKeys = Object.keys(eventTypeProfiles);
 
+/* ----------------------------------------------------------------------------
+ * Tarifas editables
+ * El usuario ajusta desde la pestaña "Tarifas" los costos de cada formato,
+ * los márgenes por tipo de evento y las reglas de horas (incluidas + recargo).
+ * Si no hay overrides guardados, se usan los presets de arriba.
+ * --------------------------------------------------------------------------*/
+export type TariffConfig = {
+  formats: Record<ShowFormatKey, ShowFormatPreset>;
+  eventTypes: Record<string, EventTypeProfile>;
+  includedHours: number; // horas de show incluidas en el precio base
+  extraHourSurcharge: number; // recargo (COP) por cada hora adicional
+};
+
+export const defaultTariffs: TariffConfig = {
+  formats: showFormats,
+  eventTypes: eventTypeProfiles,
+  includedHours: 2,
+  extraHourSurcharge: 300000,
+};
+
+/** Mezcla profunda de tarifas guardadas con los defaults (tolerante a llaves faltantes). */
+export function mergeTariffs(saved?: Partial<TariffConfig> | null): TariffConfig {
+  if (!saved) return defaultTariffs;
+  const formats = { ...defaultTariffs.formats };
+  for (const key of showFormatKeys) {
+    if (saved.formats?.[key]) formats[key] = { ...defaultTariffs.formats[key], ...saved.formats[key] };
+  }
+  const eventTypes = { ...defaultTariffs.eventTypes, ...(saved.eventTypes ?? {}) };
+  return {
+    formats,
+    eventTypes,
+    includedHours: saved.includedHours ?? defaultTariffs.includedHours,
+    extraHourSurcharge: saved.extraHourSurcharge ?? defaultTariffs.extraHourSurcharge,
+  };
+}
+
 export type ScopeProfile = {
   label: string;
   lodgingNights: number;
@@ -275,6 +328,12 @@ export type PricingResult = {
   minimum: number;
   healthy: number;
   premium: number;
+  // Modelo de horas: precio de show + recargo por horas extra + tarifa/hora implícita.
+  includedHours: number;
+  durationHours: number;
+  extraHours: number;
+  extraHourCost: number;
+  impliedHourlyRate: number; // saludable ÷ horas del show
 };
 
 function roundUp(value: number, step: number) {
@@ -292,9 +351,13 @@ export function computePricing(params: {
   contingencyPct?: number;
   musiciansPayOverride?: number; // nómina dinámica calculada por músico
   singerPayOverride?: number;
+  tariffs?: TariffConfig; // tarifas editables; si falta usa los defaults
+  durationHours?: number; // duración del show (para hora extra y tarifa/hora)
 }): PricingResult {
-  const format = showFormats[params.formatKey];
-  const eventProfile = eventTypeProfiles[params.eventType] ?? eventTypeProfiles[eventTypeKeys[0]];
+  const tariffs = params.tariffs ?? defaultTariffs;
+  const format = tariffs.formats[params.formatKey];
+  const eventProfile =
+    tariffs.eventTypes[params.eventType] ?? tariffs.eventTypes[eventTypeKeys[0]] ?? eventTypeProfiles[eventTypeKeys[0]];
   const scopeProfile = scopeProfiles[params.scope];
 
   const managerPct = params.managerPct ?? params.settings.managerPct;
@@ -319,10 +382,17 @@ export function computePricing(params: {
   const priceForMargin = (netMargin: number) =>
     roundUp(directCosts / Math.max(0.05, 1 - fixedPct - netMargin), 50000);
 
-  const breakEven = roundUp(directCosts / Math.max(0.05, 1 - fixedPct), 50000);
-  const minimum = priceForMargin(0.12);
-  const healthy = priceForMargin(targetProfitPct);
-  const premium = priceForMargin(Math.min(0.6, targetProfitPct + 0.15));
+  // Recargo por horas extra: se suma sobre el precio del show (no es costo directo).
+  const includedHours = Math.max(1, tariffs.includedHours);
+  const durationHours = params.durationHours && params.durationHours > 0 ? params.durationHours : includedHours;
+  const extraHours = Math.max(0, durationHours - includedHours);
+  const extraHourCost = extraHours * tariffs.extraHourSurcharge;
+
+  const breakEven = roundUp(directCosts / Math.max(0.05, 1 - fixedPct), 50000) + extraHourCost;
+  const minimum = priceForMargin(0.12) + extraHourCost;
+  const healthy = priceForMargin(targetProfitPct) + extraHourCost;
+  const premium = priceForMargin(Math.min(0.6, targetProfitPct + 0.15)) + extraHourCost;
+  const impliedHourlyRate = Math.round(healthy / durationHours);
 
   return {
     format,
@@ -339,6 +409,11 @@ export function computePricing(params: {
     minimum,
     healthy,
     premium,
+    includedHours,
+    durationHours,
+    extraHours,
+    extraHourCost,
+    impliedHourlyRate,
   };
 }
 
